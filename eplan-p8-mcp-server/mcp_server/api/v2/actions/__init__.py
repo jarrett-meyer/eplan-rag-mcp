@@ -280,6 +280,14 @@ from .scripted import (
     execute_custom_script,
 )
 
+# Bridge actions (in-process add-in for LIVE DataModel access)
+from .bridge import (
+    bridge_ping,
+    bridge_query_functions,
+    bridge_query_pages,
+    bridge_set_function_text,
+)
+
 # Re-export base utilities for advanced usage
 from ._base import (
     _get_connected_manager,
@@ -374,6 +382,9 @@ __all__ = [
     'pathmap_substitute', 'pathmap_get_common_paths',
     # Scripted - Custom
     'execute_custom_script',
+    # Bridge (in-process add-in, live DataModel)
+    'bridge_ping', 'bridge_query_functions', 'bridge_query_pages',
+    'bridge_set_function_text',
     # Base
     '_get_connected_manager', '_build_action', 'TARGET_VERSION',
 ]

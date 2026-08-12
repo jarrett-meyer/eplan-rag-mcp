@@ -1,0 +1,6 @@
+# Build intermediates
+obj/
+
+# Commit only the add-in DLL from bin/, not the other build outputs.
+bin/*
+!bin/EplanBridge.dll

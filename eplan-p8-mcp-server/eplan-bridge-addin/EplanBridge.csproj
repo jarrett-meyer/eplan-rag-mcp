@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    In-process EPLAN add-in ("bridge") for the MCP server.
+
+    Runs on EPLAN's main thread, where the live DataModel of the currently-open
+    project is legal to access (unlike RegisterScript/ExecuteScript dispatched
+    over the Remote API, which deadlocks on the GED document lock).
+
+    Targets EPLAN 2027 (net8 / coreclr build). Reference the *Netu.dll variants
+    (the .NET 8 assemblies); the plain *u.dll are the .NET Framework builds used
+    by EPLAN 2026 and older.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>EplanBridge</AssemblyName>
+    <RootNamespace>EplanBridge</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- We bind to EPLAN's already-loaded assemblies; never copy or self-contain. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <OutputPath>bin\</OutputPath>
+    <!-- Override with -p:EplanBin=... to build against a different EPLAN install. -->
+    <EplanBin Condition="'$(EplanBin)' == ''">C:\Program Files\EPLAN\Platform\2027.0.1\Bin</EplanBin>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Eplan.EplApi.AFNetu">
+      <HintPath>$(EplanBin)\Eplan.EplApi.AFNetu.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Eplan.EplApi.BaseNetu">
+      <HintPath>$(EplanBin)\Eplan.EplApi.BaseNetu.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Eplan.EplApi.DataModelNetu">
+      <HintPath>$(EplanBin)\Eplan.EplApi.DataModelNetu.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Eplan.EplApi.HEServicesNetu">
+      <HintPath>$(EplanBin)\Eplan.EplApi.HEServicesNetu.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

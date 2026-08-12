@@ -9,6 +9,11 @@ def load_api_module(module_path: str) -> dict:
     """
     Load and register an API add-in.
     Action: EplApiModuleAction
+
+    Args:
+        module_path: File name of the Add-in DLL to register (parameter register).
+                     If no absolute path is given, it is resolved against the
+                     current directory.
     """
     manager, error = _get_connected_manager()
     if error:
@@ -16,7 +21,7 @@ def load_api_module(module_path: str) -> dict:
 
     action = _build_action(
         "EplApiModuleAction",
-        MODULEPATH=module_path
+        register=module_path
     )
     return manager.execute_action(action)
 
