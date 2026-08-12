@@ -48,6 +48,9 @@ build/
 *.egg-info/
 skills-lock.json
 
+# Generated knowledge-graph output (local tooling)
+graphify-out/
+
 .claude
 .agents
 .agent
