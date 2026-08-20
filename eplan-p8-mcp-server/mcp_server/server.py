@@ -168,8 +168,9 @@ public class MCPTest
     with open(script_path, 'w', encoding='utf-8') as f:
         f.write(script)
 
-    # Register and execute
-    manager.execute_action(f'RegisterScript /ScriptFile:"{script_path}"')
+    # Execute only - a [Start]-only script needs no RegisterScript; it just makes
+    # EPLAN report "The script does not contain attributes for loading."
+    # ExecuteScript compiles and runs [Start] by itself (see scripted.py).
     result = manager.execute_action(f'ExecuteScript /ScriptFile:"{script_path}"')
 
     return json.dumps({

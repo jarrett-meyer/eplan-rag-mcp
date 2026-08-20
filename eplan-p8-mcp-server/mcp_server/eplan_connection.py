@@ -593,12 +593,15 @@ public class QuietExecute_{exec_id}
         """Register, execute, await the result file, and clean up a generated script."""
         try:
             logger.info(f"Wrapping action via script: {action} (script={os.path.basename(script_path)})")
-            reg_result = self.execute_action(f'RegisterScript /ScriptFile:"{script_path}"', quiet_mode=False)
-            if not reg_result.get("success"):
-                result = {"success": False, "message": f"Failed to register execution script: {reg_result.get('message')}"}
-                self._log_action(action, result, started)
-                return result
-
+            # Execute only - deliberately NOT RegisterScript first. The wrapper
+            # script generated above has only a [Start] method; RegisterScript is
+            # for persistent [DeclareAction]/[DeclareEventHandler]/[DeclareMenu]
+            # hooks, and ExecuteScript compiles and runs [Start] on its own.
+            # Registering it only makes EPLAN report "The script does not
+            # contain attributes for loading." (in its UI, not in the API
+            # result) and costs two extra round-trips per action. Under
+            # QuietMode - the whole point of this path - that is an error the
+            # caller cannot even see. See scripted.py.
             exec_result = self.execute_action(f'ExecuteScript /ScriptFile:"{script_path}"', quiet_mode=False)
             if not exec_result.get("success"):
                 result = {"success": False, "message": f"Failed to execute action via script: {exec_result.get('message')}"}
@@ -644,7 +647,7 @@ public class QuietExecute_{exec_id}
         finally:
             try:
                 if os.path.exists(script_path):
-                    self.execute_action(f'UnregisterScript /ScriptFile:"{script_path}"', quiet_mode=False)
+                    # No UnregisterScript - nothing was registered (see above).
                     os.remove(script_path)
             except Exception:
                 pass

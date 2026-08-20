@@ -174,8 +174,19 @@ def test_quiet_mode_generated_script_cleaned_up():
                if f.startswith("exec_result_")]
     assert leftovers == []
     assert results == []
-    # Unregister was issued for the generated script.
-    assert any(a.startswith("UnregisterScript") for a in fake.actions)
+
+
+def test_quiet_mode_never_registers_oneshot_script():
+    # The generated wrapper has only a [Start] method. RegisterScript is for
+    # persistent [DeclareAction]/[DeclareEventHandler]/[DeclareMenu] hooks; for a
+    # [Start]-only script it only provokes "The script does not contain
+    # attributes for loading." and burns two round-trips. ExecuteScript compiles
+    # and runs [Start] by itself.
+    mgr, fake = _manager_with_fake()
+    mgr.execute_action('someAction /A:"x"', quiet_mode=True)
+    assert any(a.startswith("ExecuteScript") for a in fake.actions)
+    assert not any(a.startswith("RegisterScript") for a in fake.actions)
+    assert not any(a.startswith("UnregisterScript") for a in fake.actions)
 
 
 def test_legacy_template_via_env(monkeypatch):
