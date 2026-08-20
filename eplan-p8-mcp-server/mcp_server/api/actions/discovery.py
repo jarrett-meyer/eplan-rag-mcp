@@ -18,6 +18,7 @@ API surfaces used (verified against the P8 docs RAG):
 import uuid
 
 from .scripted import _execute_script
+from .live import _script as _reflection_script
 from ._base import cs_escape
 
 
@@ -239,57 +240,42 @@ def list_layers() -> dict:
     Returns:
         dict with the project name and its layers.
     """
-    script = f'''using System;
-using System.IO;
-using System.Collections.Generic;
-using Eplan.EplApi.DataModel;
-using Eplan.EplApi.HEServices;
-using Eplan.EplApi.Scripting;
+    # Reached by runtime reflection, NOT `using Eplan.EplApi.DataModel;`: that
+    # using does not compile in EPLAN's script engine (CS0234, the fixed
+    # assembly set), so the script never ran, never wrote its result file, and
+    # this tool could only ever time out. See live.py for the technique.
+    body = '''            PropertyInfo ltProp = GetPropInfo(project.GetType(), "LayerTable");
+            if (ltProp == null)
+                throw new Exception("Project has no LayerTable member.");
+            object layerTable = ltProp.GetValue(project, null);
+            if (layerTable == null)
+                throw new Exception("Project.LayerTable is null.");
 
-public class ListLayers_{uuid.uuid4().hex[:6]}
-{{
-    [Start]
-    public void Run()
-    {{
-        var results = new Dictionary<string, object>();
+            PropertyInfo layersProp = GetPropInfo(layerTable.GetType(), "Layers");
+            if (layersProp == null)
+                throw new Exception("LayerTable has no Layers member.");
+            IEnumerable layers = (IEnumerable)layersProp.GetValue(layerTable, null);
 
-        try
-        {{
-            var selectionSet = new SelectionSet();
-            Project project = selectionSet.GetCurrentProject(true);
-            if (project == null)
-            {{
-                results["success"] = false;
-                results["error"] = "No project open";
-            }}
-            else
-            {{
-                results["project"] = project.ProjectName;
-                var layers = new List<Dictionary<string, object>>();
-                foreach (var layer in project.LayerTable.Layers)
-                {{
-                    var entry = new Dictionary<string, object>();
-                    entry["name"] = layer.Name;
-                    try {{ entry["description"] = layer.Description.ToString(); }} catch {{}}
-                    layers.Add(entry);
-                }}
-                results["success"] = true;
-                results["count"] = layers.Count;
-                results["layers"] = layers;
-            }}
-        }}
-        catch (Exception ex)
-        {{
-            results["success"] = false;
-            results["error"] = ex.Message;
-        }}
+            List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
+            foreach (object lay in layers)
+            {
+                if (lay == null) continue;
+                Dictionary<string, object> d = new Dictionary<string, object>();
+                string nm = PropText(lay, "Name");
+                d["name"] = nm == null ? "" : nm;
+                string ds = PropText(lay, "Description");
+                if (ds != null) d["description"] = ds;
+                list.Add(d);
+            }
 
-        string json = Newtonsoft.Json.JsonConvert.SerializeObject(results, Newtonsoft.Json.Formatting.Indented);
-        File.WriteAllText(@"{{{{RESULT_PATH}}}}", json);
-    }}
-}}
+            results["success"] = true;
+            results["count"] = list.Count;
+            results["layers"] = list;
 '''
-    return _execute_script(script)
+    return _execute_script(
+        _reflection_script("ListLayers_" + uuid.uuid4().hex[:6], body),
+        timeout=60.0,
+    )
 
 
 def list_enums(enum_type_name: str) -> dict:

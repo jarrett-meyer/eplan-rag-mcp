@@ -5,11 +5,19 @@ Some `Eplan.EplApi.*` API namespaces work directly inside scripts (no separate a
 > **Important correction (documented 2026-08):** `using Eplan.EplApi.DataModel;` /
 > `using Eplan.EplApi.HEServices;` do **NOT** compile inside the EPLAN script
 > engine (CS0234 — the engine references a fixed assembly set). However, the
-> full object model IS reachable at **runtime** via
-> `Assembly.Load("Eplan.EplApi.DataModelu")` + reflection, which requires no
+> full object model IS reachable at **runtime** via reflection, which requires no
 > API project and no additional license. See
 > `e3d-installation-spaces.md` for the working recipe (LockingStep +
 > SelectionSet + InstallationSpace.Create).
+>
+> **Do not hardcode the assembly name.** `Assembly.Load("Eplan.EplApi.DataModelu")`
+> works on 2025 but **fails on EPLAN 2027** with `BadImageFormatException`
+> (0x8007000B): there the managed object model is
+> `Eplan.EplApi.DataModelNetu` / `Eplan.EplApi.HEServicesNetu`, and the
+> un-suffixed name is the mixed-mode **native** twin. Both names exist in the
+> 2027 process, so this is a silent wrong-assembly pick. Resolve the type out of
+> `AppDomain.CurrentDomain.GetAssemblies()` instead — EPLAN already has the
+> managed assembly loaded — which works on both naming schemes.
 
 ## Parts database (`MDPartsManagement`)
 

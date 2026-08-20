@@ -12,15 +12,58 @@ reference.
 | `ActionManager.Actions` enumeration | ❌ Hangs the script engine (no result within 60 s). Use `ActionManager.FindAction(name)` only. |
 | `XCabCreateInstallationSpace` action | ⚠️ Interactive only: opens `XDeviceTagDlg` asking for the device tag; under QuietMode the dialog is suppressed and **nothing is created**. Good for letting a user pick a name, not for automation. |
 | `selectionset /TYPE:LAYOUTSPACES` | ⚠️ Read-only, returns only the **selected** layout space. Fine for "what is the user looking at", not for enumerating spaces. |
-| **Runtime reflection on the loaded DataModel/HEServices assemblies** | ✅ **This is the technique that works.** |
+| **Runtime reflection on the loaded DataModel/HEServices assemblies** | ✅ **This is the technique that works** — resolve types by scanning loaded assemblies, not `Assembly.Load` of a hardcoded name (see below; the hardcoded name breaks on 2027). |
 
 ## Why reflection works
 
-`Assembly.Load("Eplan.EplApi.DataModelu")` and
-`Assembly.Load("Eplan.EplApi.HEServicesu")` execute fine inside a script
-(runtime), even though the **compile-time** `using` directives are rejected.
-Everything reachable through those assemblies can then be driven via
-`System.Reflection` (which is in the default script reference set).
+The managed object-model assemblies are already loaded in the EPLAN process and
+can be reached at runtime inside a script, even though the **compile-time**
+`using` directives are rejected. Everything reachable through them can then be
+driven via `System.Reflection` (which is in the default script reference set).
+
+### Resolve the assembly by scanning, not by name (2027)
+
+`Assembly.Load("Eplan.EplApi.DataModelu")` / `...HEServicesu")` work on 2025 but
+**throw `BadImageFormatException` (0x8007000B, "an attempt was made to load a
+program with an incorrect format") on EPLAN 2027**. On 2027 the managed
+assemblies are **`Eplan.EplApi.DataModelNetu`** and
+**`Eplan.EplApi.HEServicesNetu`**; the un-suffixed names still exist in the
+process but are the mixed-mode **native** twins, so `Assembly.Load` silently
+picks the wrong one. (Same 'u'-suffix confusion as `Eplan.EplApi.Gui`, where the
+DLL name ends in 'u' but the namespace does not.)
+
+Version-proof replacement — scan what is already loaded and fall back to the
+`*Netu` names first:
+
+```csharp
+static Assembly[] _asms;
+static Type FindType(string fullName)
+{
+    if (_asms == null) _asms = AppDomain.CurrentDomain.GetAssemblies();
+    foreach (Assembly a in _asms)
+    {
+        try { Type t = a.GetType(fullName); if (t != null) return t; }
+        catch { }
+    }
+    string[] candidates = new string[] {
+        "Eplan.EplApi.DataModelNetu", "Eplan.EplApi.HEServicesNetu",
+        "Eplan.EplApi.DataModelu",    "Eplan.EplApi.HEServicesu" };
+    foreach (string c in candidates)
+    {
+        try
+        {
+            Type t = Assembly.Load(c).GetType(fullName);
+            if (t != null) { _asms = AppDomain.CurrentDomain.GetAssemblies(); return t; }
+        }
+        catch { }
+    }
+    throw new Exception("Could not resolve type " + fullName);
+}
+```
+
+Verified on EPLAN 2027 (.NET 8): `LockingStep` resolves out of
+`Eplan.EplApi.DataModelNetu`, and the recipe below then enumerates a live
+project (56 pages / 4181 functions on the test project) and writes to it.
 
 ## Proven recipe (environment: EPLAN 2025.0.x, RemoteClient on localhost:49152)
 
@@ -34,19 +77,18 @@ using Eplan.EplApi.ApplicationFramework;
 using Eplan.EplApi.Base;
 using Eplan.EplApi.Scripting;
 
-// reflectively reach the object model
-var dm = Assembly.Load("Eplan.EplApi.DataModelu");
-var he = Assembly.Load("Eplan.EplApi.HEServicesu");
+// reflectively reach the object model with FindType() from the section above.
+// Do NOT Assembly.Load a hardcoded assembly name - it breaks on 2027.
 
 // 1) Locking context is REQUIRED. Without it every project access throws
 //    NoLockingStepException: S063110 "No se ha generado ningún objeto de la
 //    clase 'LockingStep'".
-var lsType = dm.GetType("Eplan.EplApi.DataModel.LockingStep");
+var lsType = FindType("Eplan.EplApi.DataModel.LockingStep");
 object lockStep = Activator.CreateInstance(lsType);   // ctor() exists, Dispose() exists
 try
 {
     // 2) Current project WITHOUT ProjectManager (which also needs the lock)
-    var ssType = he.GetType("Eplan.EplApi.HEServices.SelectionSet");
+    var ssType = FindType("Eplan.EplApi.HEServices.SelectionSet");
     object ss = Activator.CreateInstance(ssType);
     var getCur = ssType.GetMethod("GetCurrentProject", new Type[] { typeof(bool) });
     object project = getCur.Invoke(ss, new object[] { false });
@@ -59,7 +101,7 @@ try
         Console.WriteLine(s.GetType().GetProperty("VisibleName").GetValue(s, null));
 
     // 4) Create the space  (static InstallationSpace.Create(Project, String, List))
-    var isType = dm.GetType("Eplan.EplApi.DataModel.E3D.InstallationSpace");
+    var isType = FindType("Eplan.EplApi.DataModel.E3D.InstallationSpace");
     var create = isType.GetMethods(BindingFlags.Public | BindingFlags.Static)
         .First(m => m.Name == "Create" && m.GetParameters().Length == 3);
     object space = create.Invoke(null, new object[] { project, "MySpaceName", null });
@@ -121,7 +163,7 @@ runtime-reflection technique, with a **filename overload** that inserts a macro
 from disk with no dialogs:
 
 ```csharp
-// Eplan.EplApi.HEServices.Insert3D  (via Assembly.Load("...HEServicesu"))
+// Eplan.EplApi.HEServices.Insert3D  (via FindType, see above)
 // verified method:  StorableObject[] WindowMacro(
 //   String strFileName, Int32 nVariant,
 //   Placement3D oParent, Matrix3D oMatrix,
