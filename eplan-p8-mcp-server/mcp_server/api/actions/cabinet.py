@@ -115,3 +115,32 @@ def import_segments_template(
         IMPORTFILE=import_file
     )
     return manager.execute_action(action)
+
+
+def create_graving_text(complete: bool = None) -> dict:
+    """
+    Generate the engraving text of a cable from the DTs of its source and target.
+    Action: XCCreateGravingtextAction
+
+    By default the designation is abbreviated according to the VASS standard
+    (Volkswagen Audi Seat Skoda): structure identifiers that have the same name
+    on source and target are removed, starting from the left.
+
+    This action takes no PROJECTNAME - it works on the current GUI selection
+    (the selected cable) in the open project. Select the cable first; calling it
+    headless with nothing selected does nothing.
+
+    Args:
+        complete: Retain mounting locations of the same name.
+                  False/None (0, the default) truncates per the VASS standard;
+                  True (1) keeps the identical structure identifiers.
+    """
+    manager, error = _get_connected_manager()
+    if error:
+        return error
+
+    action = _build_action(
+        "XCCreateGravingtextAction",
+        Complete=complete
+    )
+    return manager.execute_action(action)

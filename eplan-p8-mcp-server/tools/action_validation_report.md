@@ -1,23 +1,29 @@
 # EPLAN Action Validation Report
 
-Checked **86** unique EPLAN actions against the official docs RAG (`https://rag2026.covaga.xyz/search`).
+Checked **101** unique EPLAN actions against the official docs RAG (`https://rag2026.covaga.xyz/search`).
 
-- OK: 48
-- Action found but some parameter names not in the doc page: 36
-- Action NOT found in docs: 2
+- OK: 54
+- Action found but some parameter names not in the doc page: 43
+- Action NOT found in docs: 4
 - Request errors: 0
 
 | Status | Action | Wrapper(s) | Detail |
 |--------|--------|------------|--------|
+| NOT FOUND | `EplApiModuleActionNet` | `addons.load_api_module_net` | no doc page mentions this action (undocumented internal action or index gap) |
 | NOT FOUND | `ProjectOpen` | `project.open_project` | no doc page mentions this action (undocumented internal action or index gap) |
+| NOT FOUND | `XAMlExportProductionData2SmartMountingAction` | `e3d.export_production_data_smart_mounting` | no doc page mentions this action (undocumented internal action or index gap) |
 | NOT FOUND | `XPrjActionProjectClose` | `project.close_project` | no doc page mentions this action (undocumented internal action or index gap) |
 | WARN | `ExportNCData` | `production.export_nc_data` | params not seen in docs: ['EXPORTFILE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ExportNCData.html) |
 | WARN | `ExportProductionWiring` | `production.export_production_wiring` | params not seen in docs: ['EXPORTFILE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ExportProductionWiring.html) |
 | WARN | `ExportSegmentsTemplate` | `cabinet.export_segments_template` | params not seen in docs: ['EXPORTFILE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ExportSegmentsTemplate.html) |
 | WARN | `ImportPrePlanningData` | `cabinet.import_preplanning_data` | params not seen in docs: ['IMPORTFILE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ImportPrePlanningData.html) |
 | WARN | `ImportSegmentsTemplate` | `cabinet.import_segments_template` | params not seen in docs: ['IMPORTFILE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ImportSegmentsTemplate.html) |
+| WARN | `InsertModelViewAction` | `e3d.insert_model_view` | params not seen in docs: ['ANGLE', 'OBJECTID', 'SCALE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/InsertModelViewAction.html) |
+| WARN | `XAMlExportProductionData2RASCenterAction` | `e3d.export_production_data_ras_center` | params not seen in docs: ['ConfigScheme'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XAMlExportProductionData2RASCenterAction.html) |
+| WARN | `XEGActionInsertSymRef` | `interaction.insert_symbol_reference` | params not seen in docs: ['Cursor'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEGActionInsertSymRef.html) |
 | WARN | `XEsUserPropertiesExportAction` | `properties.export_user_properties` | params not seen in docs: ['EXPORTFILE', 'PROJECTNAME'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEsUserPropertiesExportAction.html) |
 | WARN | `XEsUserPropertiesImportAction` | `properties.import_user_properties` | params not seen in docs: ['IMPORTFILE', 'PROJECTNAME'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEsUserPropertiesImportAction.html) |
+| WARN | `XGedStartInteractionAction` | `interaction.start_ged_interaction` | params not seen in docs: ['variant'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XGedStartInteractionAction.html) |
 | WARN | `XMActionDCCommonExport` | `data_exchange.dc_export` | params not seen in docs: ['DESTINATION', 'EXECUTIONMODE', 'IMMEDIATEIMPORT'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMActionDCCommonExport.html) |
 | WARN | `XMDeleteReprTypeAction` | `data_exchange.delete_representation_type` | params not seen in docs: ['PROJECTNAME'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMDeleteReprTypeAction.html) |
 | WARN | `XMExportConnectionsAction` | `data_exchange.export_connections` | params not seen in docs: ['Destination', 'ExecutionMode', 'ImmediateImport', 'IncludeGraphicalConnections'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMExportConnectionsAction.html) |
@@ -27,13 +33,16 @@ Checked **86** unique EPLAN actions against the official docs RAG (`https://rag2
 | WARN | `XMExportPipeLineDefsAction` | `data_exchange.export_pipeline_definitions` | params not seen in docs: ['Destination', 'ExecutionMode', 'ImmediateImport'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMExportPipeLineDefsAction.html) |
 | WARN | `XMExportPotentialDefsAction` | `data_exchange.export_potential_definitions` | params not seen in docs: ['Destination', 'ExecutionMode', 'ImmediateImport'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMExportPotentialDefsAction.html) |
 | WARN | `XMImportDCArticleDataAction` | `data_exchange.import_dc_article_data` | params not seen in docs: ['IMPORTFILE', 'PROJECTNAME'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMImportDCArticleDataAction.html) |
+| WARN | `XPamsDeviceSelectionAction` | `interaction.select_device` | params not seen in docs: ['KeepSwappedConnPointInformation'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPamsDeviceSelectionAction.html) |
 | WARN | `XPartsSetDataSourceAction` | `parts.set_parts_data_source` | params not seen in docs: ['DATASOURCE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPartsSetDataSourceAction.html) |
+| WARN | `XPlaUpdateDetailAction` | `planning.update_detail_engineering` | params not seen in docs: ['UpdateParts'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPlaUpdateDetailAction.html) |
 | WARN | `backup` | `backup.backup_project, backup.backup_masterdata` | params not seen in docs: ['AUTOCOPYREFDATA', 'INCLEXTDOCS', 'INCLIMAGES'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/backup.html) |
 | WARN | `check` | `verify.check_project, verify.check_pages, verify.check_parts` | params not seen in docs: ['VERIFYCOMPLETEDONLY'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/check.html) |
 | WARN | `devicelist` | `devicelist.export_device_list, devicelist.import_device_list, devicelist.delete_device_list` | params not seen in docs: ['FORMAT'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/devicelist.html) |
 | WARN | `edit` | `navigation.edit_open_page, navigation.edit_goto_device, navigation.edit_open_layout_space` | params not seen in docs: ['INSTALLATIONSPACE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/edit.html) |
 | WARN | `export` | `export_.export_pdf_project, export_.export_pdf_pages, export_.export_dxf_project, export_.export_dxf_pages, export_.export_dwg_project, export_.export_dwg_pages, export_.export_dxfdwg_project_scheme, export_.export_dxfdwg_pages_scheme, export_.export_graphics_project, export_.export_graphics_pages, export_.export_pxf_project` | params not seen in docs: ['BLACKWHITE', 'COLORDEPTH', 'DESTINATIONPATH', 'EXPORTSCHEME', 'IMAGECOMPRESSION', 'IMAGEWIDTH', 'TARGET'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/API) |
 | WARN | `export3d` | `export_.export_3d` | params not seen in docs: ['INSTALLATIONSPACE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/export3d.html) |
+| WARN | `exportToGraphics` | `export_.export_to_graphics` | params not seen in docs: ['DESTINATIONPATH', 'EXPORTSCHEME', 'IMAGECOMPRESSION'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/API) |
 | WARN | `generate` | `generate.generate_connections, generate.generate_cables` | params not seen in docs: ['AUTOSELECTSCHEME', 'KEEPOLDNAMES', 'STARTVALUE', 'STEPVALUE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/generate.html) |
 | WARN | `generatemacros` | `macros.generate_macros` | params not seen in docs: ['DESTINATIONPATH', 'SCHEME'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/generatemacros.html) |
 | WARN | `import` | `import_.import_pxf_project, import_.import_dwg_page, import_.import_dxf_page, import_.import_dxfdwg_files, import_.import_pdf_comments` | params not seen in docs: ['BALANCEARTICLES', 'CODEPAGE', 'DESTINATIONPATH', 'GENERATEAUTOMATICCABLES', 'IMPORTSCHEME', 'MACROPROJECT', 'ONLYMACROPROJECT', 'PAGENAME', 'SOURCEPATH', 'VERIFY', 'XOFFSET', 'XSCALE', 'YOFFSET', 'YSCALE'] [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/Eplan.EplApi.HEServicesu~Eplan.EplApi.HEServices.ConnectionService3D~Import.html) |
@@ -51,9 +60,12 @@ Checked **86** unique EPLAN actions against the official docs RAG (`https://rag2
 | OK | `EplApiModuleAction` | `addons.load_api_module` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/EplApiModuleAction.html) |
 | OK | `EsCorrectConnections` | `data_exchange.correct_connections` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/EsCorrectConnections.html) |
 | OK | `ExecuteScript` | `scripts.execute_script` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ExecuteScript.html) |
+| OK | `LockUnlockAllObjects` | `settings.lock_unlock_all_objects` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/Eplan.EplApi.Remotingu~Eplan.EplApi.Remoting.IEplanRemoting~LockUnlockAllObjects.html) |
 | OK | `MfExportRibbonBarAction` | `ribbon.export_ribbon_bar` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/MfExportRibbonBarAction.html) |
 | OK | `MfImportRibbonBarAction` | `ribbon.import_ribbon_bar` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/MfImportRibbonBarAction.html) |
 | OK | `OpenWorkspaceAction` | `workspace.open_workspace` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/OpenWorkspaceAction.html) |
+| OK | `ProjectAction` | `project.run_project_action` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/ProjectAction.html) |
+| OK | `RegisterCustomPropertyEditorAction` | `addons.register_custom_property_editor` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/RegisterCustomPropertyEditorAction.html) |
 | OK | `RegisterScript` | `scripts.register_script` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/RegisterScript.html) |
 | OK | `SaveWorkspaceAction` | `workspace.save_workspace` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/SaveWorkspaceAction.html) |
 | OK | `SetProjectLanguage` | `project.set_project_language` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/SetProjectLanguage.html) |
@@ -63,9 +75,11 @@ Checked **86** unique EPLAN actions against the official docs RAG (`https://rag2
 | OK | `UpdateSegmentsFilling` | `cabinet.update_segments_filling` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/UpdateSegmentsFilling.html) |
 | OK | `XAfActionSetting` | `settings.set_setting` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XAfActionSetting.html) |
 | OK | `XAfActionSettingProject` | `settings.set_project_setting` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XAfActionSettingProject.html) |
+| OK | `XCCreateGravingtextAction` | `cabinet.create_graving_text` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XCCreateGravingtextAction.html) |
 | OK | `XCMRemoveUnnecessaryNDPsAction` | `data_exchange.remove_unnecessary_ndps` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XCMRemoveUnnecessaryNDPsAction.html) |
 | OK | `XCMUniteNetDefinitionPointsAction` | `data_exchange.unite_net_definition_points` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XCMUniteNetDefinitionPointsAction.html) |
 | OK | `XCabCalculateEnclosureTotalWeightAction` | `cabinet.calculate_cabinet_weight` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XCabCalculateEnclosureTotalWeightAction.html) |
+| OK | `XDLInsertDeviceAction` | `interaction.insert_device` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XDLInsertDeviceAction.html) |
 | OK | `XEsGetPagePropertyAction` | `properties.get_page_property` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEsGetPagePropertyAction.html) |
 | OK | `XEsGetProjectPropertyAction` | `properties.get_project_property` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEsGetProjectPropertyAction.html) |
 | OK | `XEsGetPropertyAction` | `properties.get_property` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XEsGetPropertyAction.html) |
@@ -78,6 +92,7 @@ Checked **86** unique EPLAN actions against the official docs RAG (`https://rag2
 | OK | `XMExportDCArticleDataAction` | `data_exchange.export_dc_article_data` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XMExportDCArticleDataAction.html) |
 | OK | `XPamSelectPart` | `parts.select_part` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPamSelectPart.html) |
 | OK | `XPrjActionUpgradeProjects` | `project.upgrade_projects` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPrjActionUpgradeProjects.html) |
+| OK | `XPrjConvertBaseProjectsAction` | `project.convert_base_projects` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XPrjConvertBaseProjectsAction.html) |
 | OK | `XSDPreviewAction` | `navigation.preview_page` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XSDPreviewAction.html) |
 | OK | `XSettingsExport` | `settings.export_settings` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XSettingsExport.html) |
 | OK | `XSettingsImport` | `settings.import_settings` | [doc](https://www.eplan.help/en-us/Infoportal/Content/api/2026/XSettingsImport.html) |

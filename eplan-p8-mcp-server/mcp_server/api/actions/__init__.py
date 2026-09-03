@@ -22,6 +22,8 @@ from .project import (
     get_current_project,
     set_project_language,
     switch_project_type,
+    run_project_action,
+    convert_base_projects,
 )
 
 # Backup & restore
@@ -46,6 +48,7 @@ from .export_ import (
     export_graphics_pages,
     export_pxf_project,
     export_3d,
+    export_to_graphics,
 )
 
 # Import
@@ -160,6 +163,9 @@ from .scripts import (
 from .e3d import (
     create_installation_space,
     insert_3d_macro,
+    insert_model_view,
+    export_production_data_ras_center,
+    export_production_data_smart_mounting,
 )
 
 # Settings
@@ -168,6 +174,7 @@ from .settings import (
     import_settings,
     set_setting,
     set_project_setting,
+    lock_unlock_all_objects,
 )
 
 # Properties
@@ -240,6 +247,7 @@ from .cabinet import (
     import_preplanning_data,
     export_segments_template,
     import_segments_template,
+    create_graving_text,
 )
 
 # Production
@@ -260,6 +268,8 @@ from .addons import (
     register_addon,
     unregister_addon,
     execute_raw_action,
+    load_api_module_net,
+    register_custom_property_editor,
 )
 
 # Scripted actions (C# scripts for advanced APIs)
@@ -320,6 +330,27 @@ from .live import (
     live_set_connection_designations,
 )
 
+# GED interaction (start an interactive placement in the graphical editor)
+from .interaction import (
+    start_ged_interaction,
+    insert_device,
+    insert_symbol_reference,
+    select_device,
+)
+
+# Preplanning / detail engineering
+from .planning import (
+    update_detail_engineering,
+)
+
+# Action catalog (generic tier - reach every EPLAN action, no wrapper needed)
+from .catalog import (
+    action_catalog,
+    action_describe,
+    action_run,
+    ribbon_catalog,
+)
+
 # Re-export base utilities for advanced usage
 from ._base import (
     _get_connected_manager,
@@ -331,14 +362,15 @@ __all__ = [
     # Project
     'open_project', 'close_project', 'project_management', 'upgrade_projects',
     'compress_project', 'synchronize_project', 'get_current_project',
-    'set_project_language', 'switch_project_type',
+    'set_project_language', 'switch_project_type', 'run_project_action',
+    'convert_base_projects',
     # Backup
     'backup_project', 'backup_masterdata', 'restore_project', 'restore_masterdata',
     # Export
     'export_pdf_project', 'export_pdf_pages', 'export_dxf_project', 'export_dxf_pages',
     'export_dwg_project', 'export_dwg_pages', 'export_dxfdwg_project_scheme',
     'export_dxfdwg_pages_scheme', 'export_graphics_project', 'export_graphics_pages',
-    'export_pxf_project', 'export_3d',
+    'export_pxf_project', 'export_3d', 'export_to_graphics',
     # Import
     'import_pxf_project', 'import_dwg_page', 'import_dxf_page', 'import_dxfdwg_files',
     'import_pdf_comments', 'import_3d',
@@ -373,9 +405,11 @@ __all__ = [
     # Scripts
     'register_script', 'unregister_script', 'execute_script',
     # E3D / 3D layout spaces
-    'create_installation_space', 'insert_3d_macro',
+    'create_installation_space', 'insert_3d_macro', 'insert_model_view',
+    'export_production_data_ras_center', 'export_production_data_smart_mounting',
     # Settings
     'export_settings', 'import_settings', 'set_setting', 'set_project_setting',
+    'lock_unlock_all_objects',
     # Properties
     'get_project_property', 'set_project_property', 'get_page_property',
     'set_page_property', 'get_property', 'set_property',
@@ -399,12 +433,14 @@ __all__ = [
     # Cabinet
     'calculate_cabinet_weight', 'update_segments_filling', 'topology_operation',
     'import_preplanning_data', 'export_segments_template', 'import_segments_template',
+    'create_graving_text',
     # Production
     'export_nc_data', 'export_production_wiring',
     # Ribbon
     'export_ribbon_bar', 'import_ribbon_bar',
     # Add-ons
     'load_api_module', 'register_addon', 'unregister_addon', 'execute_raw_action',
+    'load_api_module_net', 'register_custom_property_editor',
     # Scripted - Parts database
     'parts_db_query', 'parts_db_count', 'parts_db_get_part', 'parts_db_create',
     'parts_db_update', 'parts_db_list_product_groups',
@@ -425,6 +461,13 @@ __all__ = [
     # Live DataModel
     'live_query_functions', 'live_query_pages', 'live_set_function_text',
     'live_set_connection_designations',
+    # GED interaction
+    'start_ged_interaction', 'insert_device', 'insert_symbol_reference',
+    'select_device',
+    # Preplanning / detail engineering
+    'update_detail_engineering',
+    # Action catalog
+    'action_catalog', 'action_describe', 'action_run', 'ribbon_catalog',
     # Base
     '_get_connected_manager', '_build_action',
 ]

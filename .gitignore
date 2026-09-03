@@ -61,3 +61,7 @@ cloudflare-rag-eplan-p8/migration/data/
 cloudflare-rag-eecpro/migration/data/
 *.ndjson
 
+
+# Generated EPLAN scripts and their result files (runtime artifacts)
+eplan-p8-mcp-server/mcp_server/scripts/generated/*.cs
+eplan-p8-mcp-server/mcp_server/scripts/results/*.json

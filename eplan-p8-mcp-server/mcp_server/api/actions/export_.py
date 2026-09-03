@@ -526,3 +526,77 @@ def export_3d(
         INSTALLATIONSPACE=installation_space
     )
     return manager.execute_action(action)
+
+
+def export_to_graphics(
+    destination_path: str,
+    type: str = "GRAPHICPROJECT",
+    project_name: str = None,
+    page_name: str = None,
+    export_scheme: str = None,
+    format: str = None,
+    color_depth: int = None,
+    image_width: int = None,
+    image_compression: str = None,
+    black_white: bool = None,
+    use_page_filter: bool = None
+) -> dict:
+    """
+    Export pages or a whole project to a graphical format (TIF, GIF, PNG, JPG, BMP).
+    Action: exportToGraphics
+
+    How this differs from export_graphics_project / export_graphics_pages
+    (which drive the generic "export" action with TYPE=GRAPHICPROJECT /
+    TYPE=GRAPHICPAGE): both reach the same graphical export, but the generic
+    "export" wrappers take no EXPORTSCHEME and therefore hard-code FORMAT,
+    COLORDEPTH and IMAGEWIDTH on every call. exportToGraphics is the dedicated,
+    scheme-driven entry point: pass export_scheme and leave the image options
+    None so the scheme supplies them, and it additionally exposes USEPAGEFILTER
+    for project-level exports.
+
+    Use export_to_graphics when a graphical export scheme is configured in the
+    project (the normal case) or when you need USEPAGEFILTER. Use the older
+    export_graphics_project / export_graphics_pages when you want to state every
+    image option explicitly with no scheme involved.
+
+    Note the documented default of BLACKWHITE is 1 - leaving black_white None
+    yields a black/white image, unlike export_graphics_project whose
+    black_white defaults to False (color).
+
+    Args:
+        destination_path: Target directory. Created if missing. For a project
+                          export a subdirectory named after the project is
+                          created below it.
+        type: "GRAPHICPROJECT" (whole project) or "GRAPHICPAGE" (pages)
+        project_name: Project path with full path (optional; selected project if omitted)
+        page_name: Page to export - only effective with type="GRAPHICPAGE"
+        export_scheme: Graphical export scheme; supplies defaults for the other
+                       optional parameters. Most recently used scheme if omitted.
+        format: Output format - "BMP", "TIF", "GIF", "PNG", "JPG"
+        color_depth: 1, 8, 16, 24 or 32 (format dependent)
+        image_width: Image width in pixels; height follows the page dimensions
+        image_compression: TIF only - "LZW", "RLE", "CCITT3", "CCITT4", "NONE".
+                           CCITT3/CCITT4/RLE force color depth 1.
+        black_white: Output in black and white. Documented default: 1 (true).
+        use_page_filter: Export only filtered pages instead of all project pages
+                         (matches the "Active" check box in the page navigator).
+    """
+    manager, error = _get_connected_manager()
+    if error:
+        return error
+
+    action = _build_action(
+        "exportToGraphics",
+        TYPE=type,
+        PROJECTNAME=project_name,
+        PAGENAME=page_name,
+        EXPORTSCHEME=export_scheme,
+        DESTINATIONPATH=destination_path,
+        FORMAT=format,
+        COLORDEPTH=color_depth,
+        IMAGEWIDTH=image_width,
+        IMAGECOMPRESSION=image_compression,
+        BLACKWHITE=black_white,
+        USEPAGEFILTER=use_page_filter
+    )
+    return manager.execute_action(action)

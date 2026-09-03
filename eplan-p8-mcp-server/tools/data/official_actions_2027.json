@@ -1,0 +1,3010 @@
+{
+ "CleanWorkspaceAction": {
+  "name": "CleanWorkspaceAction",
+  "description": "Cleans an existing workspace.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/CleanWorkspaceAction.html",
+  "params": [
+   {
+    "name": "Workspacename",
+    "description": "Name of the workspace to be cleaned (a string). If the workspace name is empty the LAST_USED workspace will be cleaned."
+   },
+   {
+    "name": "Silent",
+    "description": "Determines whether it runs in silent mode (0 = No, 1 = Yes). In silent mode, all dialogs will be suppressed (e.g. error dialogs). Default = 0"
+   }
+  ]
+ },
+ "EplApiModuleAction": {
+  "name": "EplApiModuleAction",
+  "description": "Loads and registers an API add-in for .NET Framework based code.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/EplApiModuleAction.html",
+  "params": [
+   {
+    "name": "register",
+    "description": "File name of the add-in DLL to be registered. If an absolute filename is not specified, the file name is preceded by the system's current directory."
+   },
+   {
+    "name": "registerModule",
+    "description": "Registers an API module. The settings must be available, then the services are created."
+   },
+   {
+    "name": "unregister",
+    "description": "Assembly file title of the add-in to be unregistered. The file title is the one displayed in the API module dialog. (This is the name of the assembly without path and without the ending \".dll\")"
+   },
+   {
+    "name": "unregisterInternal",
+    "description": "Assembly file title of the add-in to be unregistered. If an error makes the unload impossible, the module is only unregistered."
+   }
+  ]
+ },
+ "EplApiModuleActionNet": {
+  "name": "EplApiModuleActionNet",
+  "description": "Loads and registers an API add-in for .NET Core based code.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/EplApiModuleActionNet.html",
+  "params": [
+   {
+    "name": "register",
+    "description": "File name of the add-in DLL to be registered. If an absolute filename is not specified, the file name is preceded by the system's current directory."
+   },
+   {
+    "name": "registerModule",
+    "description": "Registers an API module. The settings must be available, then the services are created."
+   },
+   {
+    "name": "unregister",
+    "description": "Assembly file title of the add-in to be unregistered. The file title is the one displayed in the API module dialog. (This is the name of the assembly without path and without the ending \".dll\")"
+   },
+   {
+    "name": "unregisterInternal",
+    "description": "Assembly file title of the add-in to be unregistered. If an error makes the unload impossible, the module is only unregistered."
+   }
+  ]
+ },
+ "EsCorrectConnections": {
+  "name": "EsCorrectConnections",
+  "description": "Merges graphical properties (color, line type, layer...) of connection definition points into one signal definition point for each signal, if these graphical properties are equal on the whole signal.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/EsCorrectConnections.html",
+  "params": []
+ },
+ "ExecuteScript": {
+  "name": "ExecuteScript",
+  "description": "Runs the given script.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ExecuteScript.html",
+  "params": [
+   {
+    "name": "ScriptFile",
+    "description": "Script file to be run. File name with full path."
+   }
+  ]
+ },
+ "ExportNCData": {
+  "name": "ExportNCData",
+  "description": "Action exports NC data for machines.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ExportNCData.html",
+  "params": [
+   {
+    "name": "MachineType",
+    "description": "Type of machine (integer, mandatory). Possible values: - 1 = \"NC Steinhauer\", - 2 = \"Rittal - Perforex BC\", - 3 = \"NC DXF\", - 4 = \"Drilling template\", - 5 = \"Rittal - Perforex LC\", - 6 = \"Copper NC\", - 7 = \"Copper DXF\", - 8 = \"Pipe bending\""
+   },
+   {
+    "name": "MachineName",
+    "description": "Name of machine which has to be defined in settings under COMPANY.NCLog.[MachineTypeScheme].[MachineName] (string, mandatory)."
+   },
+   {
+    "name": "ProjectName",
+    "description": "Name of the project (string, optional). If not set, the current project is exported. If project name (including complete path and extension) is set, project is loaded (if needed) and activated."
+   },
+   {
+    "name": "UseSelection",
+    "description": "Specifies whether to use fields contained in the current selection (integer, optional). 0: \"Don't care about selection\", != 0: \"Use fields contained in current selection\". Only used if the ProjectName parameter is not set. Default value: 0"
+   },
+   {
+    "name": "TargetDirectory",
+    "description": "Determines target export directory (string, optional). If set, content overrides export directory of settings."
+   },
+   {
+    "name": "TargetFile",
+    "description": "Determines target file name(string, optional). If set, the filename is used as target file name. Otherwise, the default file name is used. This parameter is only applicable for MachineType = 6(Copper NC)."
+   },
+   {
+    "name": "MaterialName",
+    "description": "If set and known in machine settings, this material is set for export (string, optional). Only used for Rittal Perforex BC, LC and Copper NC."
+   }
+  ]
+ },
+ "ExportProductionWiring": {
+  "name": "ExportProductionWiring",
+  "description": "Action to export Production Wiring Data for machines according to calling parameters.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ExportProductionWiring.html",
+  "params": [
+   {
+    "name": "MachineType",
+    "description": "Type of machine (integer, mandatory). Possible values: - 1 = \"Komax\", - 2 = \"CadCabel\", - 3 = \"Schleuniger\", - 4 = \"Steinhauer PWA\", - 5 = \"Metzner\", - 7 = \"WireList\", - 8 = \"Averex\", =&gt; wird nicht mehr benutzt - 9 = \"Rittal - Wire Terminal WT\""
+   },
+   {
+    "name": "MachineName",
+    "description": "Name of machine which has to be defined in settings (string, mandatory)."
+   },
+   {
+    "name": "ProjectName",
+    "description": "Name of the project (string, optional). If not set, the current project is exported. If project name (including complete path and extension) is set, project is loaded (if needed) and activated."
+   },
+   {
+    "name": "UseSelection",
+    "description": "Specifies whether to use fields contained in the current selection (integer, optional). - 0 = The selection will not be considered. - Any value other than 0 = The selection of 3D connections is taken into account. The fields contained in current selection of 3D connections is used. This parameter only has an effect if the ProjectName parameter is not set. Default value: 0"
+   },
+   {
+    "name": "TargetDirectory",
+    "description": "Determines target export directory (string, optional). If set, content overrides export directory of settings."
+   },
+   {
+    "name": "FileName",
+    "description": "Determines target export file name (string, optional). If set, content overrides export file name of settings. In Case of KOMAX and Steinhauer PWA export, fixed filename is used. So, this filename parameter will not be considered."
+   },
+   {
+    "name": "Language",
+    "description": "Language code for export language (string, optional). Default value: \"de_DE\""
+   },
+   {
+    "name": "MultipleConnections",
+    "description": "Determines whether previously exported wires will be reexported. (bool, optional). If true, reexports previously exported wires. If false, exports only those wires never exported before. Default value: false."
+   }
+  ]
+ },
+ "ExportSegmentsTemplate": {
+  "name": "ExportSegmentsTemplate",
+  "description": "Action to export segment templates to file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ExportSegmentsTemplate.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "FILENAME",
+    "description": "Full file name of target file. Can't be null or empty."
+   },
+   {
+    "name": "DESCRIPTION",
+    "description": "Description which is contained in exported file. Value should be in multilang string format."
+   }
+  ]
+ },
+ "ImportPrePlanningData": {
+  "name": "ImportPrePlanningData",
+  "description": "Action to import pre-planning data.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ImportPrePlanningData.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "FILENAME",
+    "description": "Full file name of target file. This parameter is mandatory."
+   },
+   {
+    "name": "SCHEMENAME",
+    "description": "Name of the scheme that defines the assignment of the external data fields to the EPLAN properties. This parameter is mandatory."
+   },
+   {
+    "name": "TABLENAME",
+    "description": "If import is done from excel file then this parameter is used. It is a name of table or data area contained in the data source."
+   },
+   {
+    "name": "DELIMITER",
+    "description": "If import is done from text file then this parameter is used. It is used to determine the separator that is used in the text file in order to separate the columns."
+   },
+   {
+    "name": "HEADER",
+    "description": "If 1then column names from the data table are output in the External field column of the assignment table. If 0the import ignores the column names. Used only for import from excel file. Parameter is optional. Default = 0(No)."
+   },
+   {
+    "name": "TARGETNAME",
+    "description": "Name of object (DMPLAOBJECT_FULLDESIGNATION) below which the imported data are to be inserted. If parameter not exists then data are inserted under project."
+   },
+   {
+    "name": "SKIPERRORS",
+    "description": "If 1 the import will not be aborted because of errors and messages that occur. Parameter is optional. Default = 1(Yes)."
+   },
+   {
+    "name": "OVERWRITE",
+    "description": "If 1then existing planning objects will be overwritten with the data from the planning objects of the same name from the import file. If 0 then existing planning objects remain unchanged. Parameter is optional. Default = 1(Yes)."
+   },
+   {
+    "name": "UPDATEONLY",
+    "description": "If 1 then only data of existing structure segments and planning objects will be updated. Parameter is optional. Default = 0(No)."
+   }
+  ]
+ },
+ "ImportSegmentsTemplate": {
+  "name": "ImportSegmentsTemplate",
+  "description": "Action to import segment templates from file to project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ImportSegmentsTemplate.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path(optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "FILENAME",
+    "description": "Full file name of source file. Can't be null or empty."
+   }
+  ]
+ },
+ "InsertModelViewAction": {
+  "name": "InsertModelViewAction",
+  "description": "Action to insert model view object on a page.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/InsertModelViewAction.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "LAYOUTSPACE",
+    "description": "Name of layout space for which model view is created. This parameter is mandatory."
+   },
+   {
+    "name": "STRUCTURE",
+    "description": "Structure identifier for which model view is created. This parameter is mandatory if name of layout space is not unique in project."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Full name of page on which model view will be inserted. This parameter is mandatory."
+   },
+   {
+    "name": "DX",
+    "description": "Width of model view. This parameter is mandatory."
+   },
+   {
+    "name": "DY",
+    "description": "Height of model view. This parameter is mandatory."
+   },
+   {
+    "name": "VIEWNAME",
+    "description": "Name of model view."
+   },
+   {
+    "name": "DESCRIPTION",
+    "description": "Description of model view. Value of this parameter can be in multi-language string format."
+   },
+   {
+    "name": "ANGLE",
+    "description": "Rotation of the content of model view. Possible values are: - 1 - content is rotated 90° counter-clockwise; - 2 - content is rotated 90° in opposite direction."
+   },
+   {
+    "name": "SELECTIONSCHEME",
+    "description": "Name of the selection scheme. It must be used with cabinet VIEWTYPE parameter."
+   },
+   {
+    "name": "STYLE",
+    "description": "Style in which content of model view is displayed. Possible values are: - 0 - Wire frame model; - 1 - Hidden lines; - 2 - Shading; - 3 - Hidden lines / Simplified representation; - 4 - Shading / Simplified representation."
+   },
+   {
+    "name": "ITEMLABELING",
+    "description": "Name of the scheme which is applied for labeling the items in the model view."
+   },
+   {
+    "name": "VIEWPOINT",
+    "description": "The direction from which objects are seen in model view. Possible values are: - 0 - Default; - 1 - Bottom; - 2 - Top; - 3 - Left; - 4 - Right; - 5 - Front; - 6 - Rear; - 7 - SE isometric; - 8 - SW isometric; - 9 - NE isometric; - 10 - NW isometric;"
+   },
+   {
+    "name": "ROOTELEMENTS",
+    "description": "Values of property FUNCTION3D_ID_RELATIVE separated by # from 3D placements which will be set as root elements in created model view."
+   },
+   {
+    "name": "SCALESETTING",
+    "description": "Type of scaling used to display objects in the model view. Possible values are: - 0 - Automatic; - 1 - Fit; - 2 - Manually defined;"
+   },
+   {
+    "name": "SCALE",
+    "description": "Scale used to display objects in model view."
+   },
+   {
+    "name": "VIEWTYPE",
+    "description": "Type of view used to display objects. Possible values are: - 0 - Undefined; - 1 - Cabinet; - 2 - EMI; - 3 - Unfolding; - 4 - DrillView;"
+   },
+   {
+    "name": "OBJECTID",
+    "description": "[OUT] Object id of created model view."
+   }
+  ]
+ },
+ "LockUnlockAllObjects": {
+  "name": "LockUnlockAllObjects",
+  "description": "This action is deprecated. Allows to set project settings.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/LockUnlockAllObjects.html",
+  "params": [],
+  "doc_error": "HTTP Error 404: Not Found"
+ },
+ "MfExportRibbonBarAction": {
+  "name": "MfExportRibbonBarAction",
+  "description": "Exports main ribbon bar customizing to XML file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/MfExportRibbonBarAction.html",
+  "params": [
+   {
+    "name": "FileName",
+    "description": "Path to the file which will be created by export action."
+   }
+  ]
+ },
+ "MfImportRibbonBarAction": {
+  "name": "MfImportRibbonBarAction",
+  "description": "Imports main ribbon bar customizing from XML file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/MfImportRibbonBarAction.html",
+  "params": [
+   {
+    "name": "FileName",
+    "description": "Path to the ribbon bar file that will be imported."
+   }
+  ]
+ },
+ "OpenWorkspaceAction": {
+  "name": "OpenWorkspaceAction",
+  "description": "Opens an existing workspace.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/OpenWorkspaceAction.html",
+  "params": [
+   {
+    "name": "Workspacename",
+    "description": "Name of the workspace to be opened (a string)."
+   },
+   {
+    "name": "Silent",
+    "description": "Determines whether it runs in silent mode (optional, 0 = No, 1 = Yes). In silent mode, all dialogs will be suppressed (e.g. error dialogs). Default = 0"
+   }
+  ]
+ },
+ "ProjectAction": {
+  "name": "ProjectAction",
+  "description": "Runs an action upon a given project and closes project afterwards.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ProjectAction.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path"
+   },
+   {
+    "name": "Action",
+    "description": "Action to be executed, action parameter following."
+   },
+   {
+    "name": "NOCLOSE",
+    "description": "Determines whether the current project will be closed afterwards (optional). 0 = Project will be closed afterwards (default), 1 = Project will not be closed afterwards"
+   },
+   {
+    "name": "OpenMode",
+    "description": "Specifies the mode in which the project is opened (optional). May have the following values: \"Standard\", \"ReadOnly\", \"Exclusive\"."
+   },
+   {
+    "name": "EnableDialogs",
+    "description": "When status is set to \"TRUE\", value passed in Action parameter won't start in quiet mode."
+   }
+  ]
+ },
+ "ProjectOpen": {
+  "name": "ProjectOpen",
+  "description": "Opens given project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/ProjectOpen.html",
+  "params": [
+   {
+    "name": "Project",
+    "description": "Project to be opened"
+   },
+   {
+    "name": "OpenMode",
+    "description": "Specifies the mode in which the project is opened (optional). May have the following values: \"Standard\", \"ReadOnly\", \"Exclusive\"."
+   }
+  ]
+ },
+ "RegisterCustomPropertyEditorAction": {
+  "name": "RegisterCustomPropertyEditorAction",
+  "description": "Registers/Unregisters a custom editor dialog for a property ID or identifying name of a user-defined property.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/RegisterCustomPropertyEditorAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Property ID"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "Property index"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifying name of the user-defined property"
+   },
+   {
+    "name": "Action",
+    "description": "This action will be called for editing the specified property."
+   },
+   {
+    "name": "Editable",
+    "description": "\"true\" (1): edit inside of the hotspot cell allowed."
+   },
+   {
+    "name": "Register",
+    "description": "\"true\" (1): register this action. \"false\" (0): unregister this action."
+   }
+  ]
+ },
+ "RegisterScript": {
+  "name": "RegisterScript",
+  "description": "Register a script.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/RegisterScript.html",
+  "params": [
+   {
+    "name": "ScriptFile",
+    "description": "Script file name with a complete path."
+   },
+   {
+    "name": "RegisterAgain",
+    "description": "true: register a script with the same name again. When this parameter is set, no Decider is shown for this question."
+   },
+   {
+    "name": "ShowDecider",
+    "description": "Show a Decider when needed. Value is true or false. The parameter is ignored when quiet mode is set. (Then RegisterAgain is set to true)."
+   }
+  ]
+ },
+ "SaveWorkspaceAction": {
+  "name": "SaveWorkspaceAction",
+  "description": "Saves the specified workspace. If the workspace already exists, changes are saved. If the workspace does not yet exist, it is created and saved.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/SaveWorkspaceAction.html",
+  "params": [
+   {
+    "name": "Workspacename",
+    "description": "Name of the workspace to be saved (a string)."
+   },
+   {
+    "name": "Silent",
+    "description": "Determines whether it runs in silent mode (optional, 0 = No, 1 = Yes). In silent mode, all dialogs will be suppressed (e.g. error dialogs). Default = 0"
+   }
+  ]
+ },
+ "SetProjectLanguage": {
+  "name": "SetProjectLanguage",
+  "description": "Sets project languages for read-write and read-only projects.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/SetProjectLanguage.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Full project name. The project has to be open."
+   },
+   {
+    "name": "DISPLAY",
+    "description": "Displayed language ID(s) (e.g. \"de_DE\" for German). If more than one displayed language is specified, the values are separated by \";\"."
+   },
+   {
+    "name": "VARIABLE",
+    "description": "Variable project language. Can be set via language ID (e.g. \"de_DE\" for German) or displayed language index (e.g. \"03_03\" for the \"Displayed language 3\"). The last described method only works for the first 5 displayed languages (so for this method \"05_05\" is the maximum value)."
+   },
+   {
+    "name": "SOURCE",
+    "description": "Source language"
+   }
+  ]
+ },
+ "SwitchProjectType": {
+  "name": "SwitchProjectType",
+  "description": "Action to change type of project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/SwitchProjectType.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PROJECTTYPE",
+    "description": "New type of project (optional). Type is represented by numbers: 1 - Schematic project; 2 - Macro project. If this parameter is not used then action will switch current type to the second."
+   }
+  ]
+ },
+ "Topology": {
+  "name": "Topology",
+  "description": "Action for topology-related operations.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/Topology.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: \"RouteConnections\": Routes given topology connections. \"CreateFunctions\": Creates topology functions that are connected to structure routing fulcrums."
+   }
+  ]
+ },
+ "UnregisterScript": {
+  "name": "UnregisterScript",
+  "description": "Unregisters a script.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/UnregisterScript.html",
+  "params": [
+   {
+    "name": "ScriptFile",
+    "description": "Script file name with a complete path."
+   }
+  ]
+ },
+ "UpdateSegmentsFilling": {
+  "name": "UpdateSegmentsFilling",
+  "description": "Calculates and sets value of property CABLINGSEGMENT_FILLING for all segments in project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/UpdateSegmentsFilling.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   }
+  ]
+ },
+ "XAMlExportProductionData2RASCenterAction": {
+  "name": "XAMlExportProductionData2RASCenterAction",
+  "description": "Export of the construction spaces of the selected project in AutomationML format. The generated AutomationML file is intended for import into the Rittal - RiPanel Processing Center, which controls the machines for creating the openings or cutting the mounting rails and wiring channels.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XAMlExportProductionData2RASCenterAction.html",
+  "params": [
+   {
+    "name": "ProjectPath",
+    "description": "Project which should be exported. Note, this project has to be opened in P8 beforehand. If ProjectPath is invalid, the current Project will be used."
+   },
+   {
+    "name": "FileName",
+    "description": "Projectpath + Filename where the project will be exported to. If this parameter is empty, a dialog will be shown."
+   },
+   {
+    "name": "DatabaseId",
+    "description": "Database ID of the project to be exported."
+   },
+   {
+    "name": "WholeProject",
+    "description": "Determines whether to use the whole project for input objects for export (optional)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value: Most recently used configuration scheme."
+   }
+  ]
+ },
+ "XAMlExportProductionData2SmartMountingAction": {
+  "name": "XAMlExportProductionData2SmartMountingAction",
+  "description": "Export of the construction spaces of the selected project in AutomationML format. The generated AutomationML file is intended for import into the Rittal - RiPanel Processing Center, which controls the machines for creating the openings or cutting the mounting rails and wiring channels.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XAMlExportProductionData2SmartMountingAction.html",
+  "params": [],
+  "doc_error": "HTTP Error 404: Not Found"
+ },
+ "XAfActionSetting": {
+  "name": "XAfActionSetting",
+  "description": "Sets the value of a setting.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XAfActionSetting.html",
+  "params": [
+   {
+    "name": "set",
+    "description": "Name of the setting to set."
+   },
+   {
+    "name": "index",
+    "description": "Optional index of setting. If missing, then 0 is used."
+   },
+   {
+    "name": "value",
+    "description": "New value of setting."
+   }
+  ]
+ },
+ "XAfActionSettingProject": {
+  "name": "XAfActionSettingProject",
+  "description": "Sets the value of a project setting.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XAfActionSettingProject.html",
+  "params": [
+   {
+    "name": "Project",
+    "description": "Full name of the target project. When empty, the currently selected project is used."
+   },
+   {
+    "name": "set",
+    "description": "Name of the project setting to set."
+   },
+   {
+    "name": "index",
+    "description": "Optional index of setting. If missing, then 0 is used."
+   },
+   {
+    "name": "value",
+    "description": "New value of setting."
+   }
+  ]
+ },
+ "XCCreateGravingtextAction": {
+  "name": "XCCreateGravingtextAction",
+  "description": "Generates an engraving text from the DTs of the source and target of the cable. By default, the designation is abbreviated in accordance with the VASS standard (Volkswagen Audi Seat Skoda), i.e., structure identifiers having the same name of source and target are removed - starting from the left.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XCCreateGravingtextAction.html",
+  "params": [
+   {
+    "name": "Complete",
+    "description": "Retain mounting locations of the same name (optional, 0 = No, 1 = Yes). Default = 0 If the parameter is not specified or set to 0, the designation is truncated in accordance with the VASS standard (Volkswagen Audi Seat Skoda), i.e., structure identifiers having the same name of source and target are removed - starting from the left. If this parameter is set to 1, mounting locations of the same nam"
+   }
+  ]
+ },
+ "XCMRemoveUnnecessaryNDPsAction": {
+  "name": "XCMRemoveUnnecessaryNDPsAction",
+  "description": "Removes unnecessary net definition points of active project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XCMRemoveUnnecessaryNDPsAction.html",
+  "params": [
+   {
+    "name": "Quiet",
+    "description": "Suppresses message dialog if true."
+   }
+  ]
+ },
+ "XCMUniteNetDefinitionPointsAction": {
+  "name": "XCMUniteNetDefinitionPointsAction",
+  "description": "Unites net definition points placed on the same net in active project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XCMUniteNetDefinitionPointsAction.html",
+  "params": []
+ },
+ "XCabCalculateEnclosureTotalWeightAction": {
+  "name": "XCabCalculateEnclosureTotalWeightAction",
+  "description": "Calculates the total weight of a cabinet and writes it to the \"Total weight\" property (#36108 - FUNCTION3D_CABINET_TOTALWEIGHT)",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XCabCalculateEnclosureTotalWeightAction.html",
+  "params": [
+   {
+    "name": "ProjectName",
+    "description": "Project name with full path (optional input parameter for the \"All cabinets\" mode). When the specified project is not open, this action opens it and closes it automatically after this action is executed. If the project is invalid, the current project will be used."
+   },
+   {
+    "name": "DatabaseId",
+    "description": "Database ID of the project to be used (optional input parameter for the \"All cabinets\" mode). When using this parameter, the project must be opened in P8 beforehand. If the project is invalid, the current project will be used. If the ProjectName parameter is specified, the DatabaseId parameter is not taken into account."
+   },
+   {
+    "name": "CabinetTotalWeight",
+    "description": "Total weight of a single cabinet (optional output parameter for the \"One cabinet\" mode). If the mode is \"One cabinet\", this parameter contains the result of the calculation."
+   }
+  ]
+ },
+ "XDLInsertDeviceAction": {
+  "name": "XDLInsertDeviceAction",
+  "description": "Starts interaction for inserting a device.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XDLInsertDeviceAction.html",
+  "params": [
+   {
+    "name": "PartNr",
+    "description": "Article part number"
+   },
+   {
+    "name": "PartVariant",
+    "description": "Variant of the article."
+   },
+   {
+    "name": "ProjectId",
+    "description": "Project ID"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "Index of the project article, must be reduced to (1-50). If 0, then no project article is set."
+   }
+  ]
+ },
+ "XEGActionInsertSymRef": {
+  "name": "XEGActionInsertSymRef",
+  "description": "Standard action to find symbol references for inserting.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEGActionInsertSymRef.html",
+  "params": [
+   {
+    "name": "SymbolLibName",
+    "description": "Name of the symbol library where the symbol is to find"
+   },
+   {
+    "name": "SymbolId",
+    "description": "Number of the symbol that should be inserted"
+   },
+   {
+    "name": "VariantId",
+    "description": "Number of the variant, if the symbol has one"
+   },
+   {
+    "name": "FctDefTag",
+    "description": "Identifier of the function definition tag to search the symbol that should be inserted"
+   },
+   {
+    "name": "Placementmode",
+    "description": "Identifier of placement mode to search the symbol that should be inserted. String which defines the placement type of the symbol. The placement mode depends on the DocumentType"
+   },
+   {
+    "name": "SymbolType",
+    "description": "Identifier of symbol type to search the symbol that should be inserted"
+   },
+   {
+    "name": "CustomSymbols",
+    "description": "This parameter should be used if a user-created symbol should be inserted. The parameter is the name of the setting which contains the identifiers of the custom symbol. If this parameter is NOT empty, the custom symbol is used and not the symbol referenced by \"SymbolLibName\", \"SymbolId\", \"VariantId\". The setting itself must contain these values and look like this: XSbGui.CustomSymbols.CustomSymbol"
+   }
+  ]
+ },
+ "XEsGetPagePropertyAction": {
+  "name": "XEsGetPagePropertyAction",
+  "description": "Gets a special property of first selected page.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsGetPagePropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "Returned value of the property (output parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsGetProjectPropertyAction": {
+  "name": "XEsGetProjectPropertyAction",
+  "description": "Gets a special property of the current project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsGetProjectPropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "Returned value of the property (output parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsGetPropertyAction": {
+  "name": "XEsGetPropertyAction",
+  "description": "Gets selected objects and gets the property.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsGetPropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "Returned value of the property (output parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsSetPagePropertyAction": {
+  "name": "XEsSetPagePropertyAction",
+  "description": "Sets a special property of selected pages.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsSetPagePropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "New value of the property (input parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsSetProjectPropertyAction": {
+  "name": "XEsSetProjectPropertyAction",
+  "description": "Sets a special property of a current project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsSetProjectPropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "New value of the property (input parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsSetPropertyAction": {
+  "name": "XEsSetPropertyAction",
+  "description": "Gets selected objects and sets the property.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsSetPropertyAction.html",
+  "params": [
+   {
+    "name": "PropertyId",
+    "description": "Identifier name or number of the property to be set. Values are defined in class \"Eplan::EplApi::DataModel::Properties\" (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIdentName",
+    "description": "Identifier name of the user defined property to be set (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyIndex",
+    "description": "If the property has indices, the index; mostly 0 (input parameter, mandatory)"
+   },
+   {
+    "name": "PropertyValue",
+    "description": "New value of the property (input parameter, mandatory)"
+   }
+  ]
+ },
+ "XEsUserPropertiesExportAction": {
+  "name": "XEsUserPropertiesExportAction",
+  "description": "Exports user properties from project to file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsUserPropertiesExportAction.html",
+  "params": [
+   {
+    "name": "XMLFile",
+    "description": "Full path of the XML file"
+   },
+   {
+    "name": "Project",
+    "description": "Full project name (optional). If missing, the selected project is taken or a project selection dialog is shown."
+   }
+  ]
+ },
+ "XEsUserPropertiesImportAction": {
+  "name": "XEsUserPropertiesImportAction",
+  "description": "Imports user properties to project from file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XEsUserPropertiesImportAction.html",
+  "params": [
+   {
+    "name": "XMLFile",
+    "description": "Full path of the XML file (optional). If missing, a file selection dialog is shown."
+   },
+   {
+    "name": "Project",
+    "description": "Full project name (optional). If missing, the selected project is taken or a project selection dialog is shown."
+   },
+   {
+    "name": "Overwrite",
+    "description": "Overwrite existing properties (optional, default is a dialog to ask the user)."
+   }
+  ]
+ },
+ "XGedClosePage": {
+  "name": "XGedClosePage",
+  "description": "Closes all selected pages.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XGedClosePage.html",
+  "params": []
+ },
+ "XGedStartInteractionAction": {
+  "name": "XGedStartInteractionAction",
+  "description": "Starts an interaction of the graphical editor.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XGedStartInteractionAction.html",
+  "params": [
+   {
+    "name": "Name",
+    "description": "Name of the interaction to be started."
+   }
+  ]
+ },
+ "XGedUpdateMacroAction": {
+  "name": "XGedUpdateMacroAction",
+  "description": "Updates macros. It can be passed the full path of a project. When project is not opened, this action opens it and closes it automatically.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XGedUpdateMacroAction.html",
+  "params": [
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically."
+   },
+   {
+    "name": "SchemeName",
+    "description": "Defines a concrete scheme to use (optional when called from a command line). If not given, last used scheme name is used."
+   },
+   {
+    "name": "AutoAssignLastUsedRecord",
+    "description": "Applies the last used record for several placeholders automatically (optional), overwrites value of scheme."
+   },
+   {
+    "name": "NewVariant",
+    "description": "Allows replacement of one macro variant to another variant of same macro."
+   }
+  ]
+ },
+ "XMActionDCCommonExport": {
+  "name": "XMActionDCCommonExport",
+  "description": "Starts the export for the external editing.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMActionDCCommonExport.html",
+  "params": [
+   {
+    "name": "DATABASEID",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar)."
+   },
+   {
+    "name": "COMPLETEPROJECT",
+    "description": "The whole project is exported, not only the selected objects (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Configuration scheme (optional). If this parameter is not set, a dialog asking for the configuration scheme is displayed."
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Language (e.g. \"en_US\", \"??_??\" - all languages, etc)."
+   },
+   {
+    "name": "DESTINATION",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLSX, XML. Format must be set according to the extension in CONFIGSCHEME."
+   },
+   {
+    "name": "EXECUTIONMODE",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "IMMEDIATEIMPORT",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMActionDCImport": {
+  "name": "XMActionDCImport",
+  "description": "Imports a data configuration file into an existing EPLAN project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMActionDCImport.html",
+  "params": [
+   {
+    "name": "ProjectLink",
+    "description": "Project path"
+   },
+   {
+    "name": "DataConfigurationFile",
+    "description": "Path of data configuration file"
+   },
+   {
+    "name": "ProgressTitle",
+    "description": "Defines the progress title (optional)"
+   }
+  ]
+ },
+ "XMDeleteReprTypeAction": {
+  "name": "XMDeleteReprTypeAction",
+  "description": "Removes a representation type from selected macros and what is stored in a selected directory.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMDeleteReprTypeAction.html",
+  "params": [
+   {
+    "name": "RepresentationType",
+    "description": "Representation type of macro that should be removed. Value range [0-13]; 0 - Neutral 1 - MultiLine 2 - SingleLine 3 - PairCrossReference 4 - Overview 5 - Graphics 6 - ArticlePlacement 7 - PI_FlowChart 8 - Fluid_MultiLine 9 - Cabling 10 - ArticlePlacement3D 11 - Functional 12 - Planning 13 - FluidFunctionalOverview"
+   },
+   {
+    "name": "Source",
+    "description": "Specifies which files should be changed. Either a file, a directory name or a pattern must be specified."
+   },
+   {
+    "name": "Destination",
+    "description": "Destination directory"
+   }
+  ]
+ },
+ "XMExportConnectionsAction": {
+  "name": "XMExportConnectionsAction",
+  "description": "Action class to export connections of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportConnectionsAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All connections of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value = Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLSX, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   },
+   {
+    "name": "IncludeGraphicalConnections",
+    "description": "Graphical connections are included in the export (optional, 0 = No, 1 = Yes). Default value = 0"
+   }
+  ]
+ },
+ "XMExportDCArticleDataAction": {
+  "name": "XMExportDCArticleDataAction",
+  "description": "Starts the export for the external editing.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportDCArticleDataAction.html",
+  "params": [
+   {
+    "name": "COMPLETEPROJECT",
+    "description": "The whole article database is exported, not only the selected objects (optional, 0 = No, 1 = Yes). Default value = 0"
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Configuration scheme (optional). If this parameter is not set, a dialog asking for the configuration scheme is displayed."
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "DESTINATION",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLSX, XML. Format must be set according to the extension in CONFIGSCHEME."
+   },
+   {
+    "name": "EXECUTIONMODE",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "IMMEDIATEIMPORT",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMExportFunctionAction": {
+  "name": "XMExportFunctionAction",
+  "description": "Action class to export functions of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportFunctionAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All functions of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value: Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLSX, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMExportLocationBoxesAction": {
+  "name": "XMExportLocationBoxesAction",
+  "description": "Action class to export location boxes of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportLocationBoxesAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or button bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All pages of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value = Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLS, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMExportPagesAction": {
+  "name": "XMExportPagesAction",
+  "description": "Action class to export pages of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportPagesAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All pages of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value = Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLSX, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMExportPipeLineDefsAction": {
+  "name": "XMExportPipeLineDefsAction",
+  "description": "Action class to export pipeline definitions of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportPipeLineDefsAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or button bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All pages of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value = Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLS, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMExportPotentialDefsAction": {
+  "name": "XMExportPotentialDefsAction",
+  "description": "Action class to export potential definitions of a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMExportPotentialDefsAction.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "The database ID of one project (optional). If not entered, the ProjectName parameter is used."
+   },
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically after this action is executed. If not entered, the selected project is used when the action is called from GUI (like from a script or button bar)."
+   },
+   {
+    "name": "CompleteProject",
+    "description": "All pages of the project are exported, not only the selected ones (0 = No, 1 = Yes)."
+   },
+   {
+    "name": "ConfigScheme",
+    "description": "Configuration scheme (optional). Default value = Most recently used configuration scheme."
+   },
+   {
+    "name": "Language",
+    "description": "Language (e.g. \"en_US\")."
+   },
+   {
+    "name": "Destination",
+    "description": "Target file where the export results are saved. The following formats are supported: TXT, XLS, XML. Format must be set according to the extension in ConfigScheme."
+   },
+   {
+    "name": "ExecutionMode",
+    "description": "0 = Export, 1 = Export and edit, 2 = Edit and return"
+   },
+   {
+    "name": "ImmediateImport",
+    "description": "After edit no question appears to import the data (optional, 0 = No, 1 = Yes). Default value = 0 This only applies to ExecutionMode = 2."
+   }
+  ]
+ },
+ "XMImportDCArticleDataAction": {
+  "name": "XMImportDCArticleDataAction",
+  "description": "Imports a data configuration file into an existing EPLAN article database.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XMImportDCArticleDataAction.html",
+  "params": [
+   {
+    "name": "DATACONFIGURATIONFILE",
+    "description": "Path of data configuration file."
+   },
+   {
+    "name": "PROGRESSTITLE",
+    "description": "Defines the progress title (optional)."
+   },
+   {
+    "name": "SHOWIMPORTMESSAGES",
+    "description": "Determines whether an information dialog is shown (optional). 0 = \"no information dialog (with count of added parts) is shown\", 1 = \"information dialog is shown\" (default value)."
+   },
+   {
+    "name": "IMPORTMODE",
+    "description": "Determines whether to create new objects or to only update existing ones (optional). 0 = only create new objects, 1 = only update objects, 2 = create new and update objects If not entered, objects are updated and if new objects are in the list, a question dialog comes up, if new objects should be created."
+   },
+   {
+    "name": "IDENTIFYBYNAMEINSTEADOFID",
+    "description": "Determines whether objects are identified by name instead of ID (optional). Possible values: 0 = \"objects are identified by ID\", 1 = \"objects are identified by name instead\" If not entered, objects are identified by object ID. These 2 modes are meant for different workflows/use-cases: If you export data from the parts management, change them and import them into the same parts database, then ident"
+   }
+  ]
+ },
+ "XPamSelectPart": {
+  "name": "XPamSelectPart",
+  "description": "Starts the part selection (using the configured database).",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPamSelectPart.html",
+  "params": [
+   {
+    "name": "DatabaseId",
+    "description": "ID of the database (optional input parameter)."
+   },
+   {
+    "name": "SingleSelection",
+    "description": "Determines whether multiple parts can be selected (optional input parameter). Possible values: 0 = No (Allows multiple selections) , 1 = Yes (Only allows a single selection). Default value = 1."
+   },
+   {
+    "name": "SelectedPartsCount",
+    "description": "Number of selected parts (output parameter). If the parameter SingleSelection is set to 1, SelectedPartsCount can only be 1 or 0."
+   }
+  ]
+ },
+ "XPamsDeviceSelectionAction": {
+  "name": "XPamsDeviceSelectionAction",
+  "description": "Selects device or updates device information. This object can be a project/function/connection.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPamsDeviceSelectionAction.html",
+  "params": [
+   {
+    "name": "ProjectName",
+    "description": "The full path of project (optional). When project specified by ProjectName is not open, this action opens it and closes it automatically. If nothing is entered, the selected project will be used if the action is to be run over the user interface (e.g. via script or the ribbonbar). When executing from the Windows command line, ProjectName must be specified or ProjectAction has to be used before tha"
+   },
+   {
+    "name": "Mode",
+    "description": "Mode (optional) Supported modes are: - selectDevice (default value): Selects a new device for the existing objects. In the process all device data including the part reference data is deleted and reassigned in accordance with the device selection. - updateDevice : Updates only the device data of the parts of the existing objects. The part numbers and part reference data are retained. The functiona"
+   },
+   {
+    "name": "KeepSwappedConnPointInformation",
+    "description": "This parameter specifies if swapped connection point designations or wire colors (relative to the order in the function templates) will be kept (optional). It is only effective, if all connection point designations or wire colors will match as a set."
+   }
+  ]
+ },
+ "XPartsSetDataSourceAction": {
+  "name": "XPartsSetDataSourceAction",
+  "description": "Changes the setting responsible for parts management database type.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPartsSetDataSourceAction.html",
+  "params": [
+   {
+    "name": "DataSourceType",
+    "description": "0 = EPLAN Database (default value), 1 = SQL server, 3 = PartStore container"
+   },
+   {
+    "name": "DataBaseFileName",
+    "description": "Full database path name"
+   },
+   {
+    "name": "SqlServer",
+    "description": "SQL server name"
+   },
+   {
+    "name": "SqlCatalog",
+    "description": "SQL database name"
+   },
+   {
+    "name": "SqlUserName",
+    "description": "SQL user name"
+   },
+   {
+    "name": "SqlPassword",
+    "description": "SQL user password"
+   },
+   {
+    "name": "SqlLogin",
+    "description": "0 = Windows registration (default value), 1 = SQL server registration (username + password)"
+   },
+   {
+    "name": "SqlFullName",
+    "description": "If set, then SqlServer, SqlCatalog, SqlUserName and SqlPassword parameters are not used."
+   },
+   {
+    "name": "ContainerName",
+    "description": "Name of the PartStore container"
+   },
+   {
+    "name": "ContainerId",
+    "description": "ID of the PartStore container"
+   }
+  ]
+ },
+ "XPlaUpdateDetailAction": {
+  "name": "XPlaUpdateDetailAction",
+  "description": "The detail engineering is updated for the selected planning objects",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPlaUpdateDetailAction.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Specifies the full path to the project to be updated (optional)."
+   },
+   {
+    "name": "UpdateMacros",
+    "description": "Determines whether the macros related to the planning object are removed and placed again (optional, 0 = No, 1 = Yes). Default value = 0"
+   },
+   {
+    "name": "UpdateIdentifier",
+    "description": "Determines whether the structure identifiers, the symbolic addresses and the pipe names are written to the functions or pipe definitions (optional, 0 = No, 1 = Yes). Default value = 0"
+   },
+   {
+    "name": "UpdatePlaceholder",
+    "description": "Determines whether the placeholder records from macros related to the planning object are updated (optional, 0 = No, 1 = Yes). Default value = 0"
+   },
+   {
+    "name": "UpdatePipedata",
+    "description": "Determines whether the pipe class and substance are written to the pipe definition points and related connections and functions (optional, 0 = No, 1 = Yes). Default value = 0"
+   },
+   {
+    "name": "UpdateParts",
+    "description": "Determines whether the pre-planning parts are synchronized with parts in the detailed planning (optional, 0 = No, 1 = Yes). If set to 1, the part information at the main functions in the detailed planning is deleted and replaced with the part information of the assigned segments. Default value = 0"
+   }
+  ]
+ },
+ "XPrjActionUpgradeProjects": {
+  "name": "XPrjActionUpgradeProjects",
+  "description": "This action upgrades one ore more projects to the actual database scheme version.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPrjActionUpgradeProjects.html",
+  "params": [
+   {
+    "name": "Project",
+    "description": "Full project link file name"
+   },
+   {
+    "name": "Folder",
+    "description": "All projects in the folder and its subfolders are upgraded."
+   },
+   {
+    "name": "Archive",
+    "description": "true: ZW1 projects are also upgraded and packed afterwards."
+   },
+   {
+    "name": "BaseProject",
+    "description": "true: ZW9 and ZX1 projects are also upgraded and packed afterwards."
+   },
+   {
+    "name": "UpgradeWriteProtectedProjects",
+    "description": "true: ReadOnly projects are also upgraded (*.elr and *.elt, *.els, elx)."
+   },
+   {
+    "name": "UpgradeXMLProjects",
+    "description": "true: Projects / basic projects in XML format are also upgraded (*.ept and *.epj, *.zx2)."
+   },
+   {
+    "name": "FileTypes",
+    "description": "*.*: All projects (such as *.elk, *.ell, *.elp, *.elr, *.elt, *.els, *.elx, *.zw1, *.zw9, *.zx1, *.ept, *.epj, *.zx2)."
+   },
+   {
+    "name": "PackOriginalProject",
+    "description": "true: The original projects will be packed into a 7zip file after upgrade (default = true)."
+   },
+   {
+    "name": "UpdateConnections",
+    "description": "true: The connections in the project will be updated (default = false). Note: If the DoDataModelUpgrades parameter is false, this value will be ignored."
+   },
+   {
+    "name": "NoBackup",
+    "description": "true: No backup of the old version is created (default = false)."
+   },
+   {
+    "name": "IgnoreUpgradeBackups",
+    "description": "true: Backup projects will be ignored when converting a complete folder (default = false). Backup projects have a naming like [NAME]_V[Version]_[Backuptime]."
+   },
+   {
+    "name": "DoDataModelUpgrades",
+    "description": "true: Also data model corrections will be done (default = true). Note: If this parameter is set to false, the UpdateConnections parameter will be ignored."
+   },
+   {
+    "name": "FileDescription",
+    "description": "0: Default, will add new data backup description at the end. 1: Data backup description will not change. 2: Replace data backup description with new one."
+   }
+  ]
+ },
+ "XPrjConvertBaseProjectsAction": {
+  "name": "XPrjConvertBaseProjectsAction",
+  "description": "This action converts one ore more old basic projects (*.ept and *.epb files) to new basic projects (*.zw9). All basic projects in a folder are upgraded (recursively).",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XPrjConvertBaseProjectsAction.html",
+  "params": [
+   {
+    "name": "ProjectTemplate",
+    "description": "Full *.ept or *.epb file name of the old basic project to be converted."
+   },
+   {
+    "name": "Folder",
+    "description": "All basic projects in this folder and its subfolders are converted to *.zw9."
+   },
+   {
+    "name": "FileTypes",
+    "description": "*.*: All old basic project formats (such as *.ept and *.epb) are converted."
+   }
+  ]
+ },
+ "XSDPreviewAction": {
+  "name": "XSDPreviewAction",
+  "description": "Opens or closes the preview of a project page or macro",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XSDPreviewAction.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Name of the project. If the path is missing, the default value is used (see $(MD_PROJECTS))"
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of page as string"
+   },
+   {
+    "name": "MACRONAME",
+    "description": "Complete path to a window or page macro (with extension). If the path is missing, the default value is used (see $(MD_MACROS))"
+   },
+   {
+    "name": "SHOW",
+    "description": "1: The preview of the page/macro will be opened. 0: The preview will be closed."
+   }
+  ]
+ },
+ "XSettingsExport": {
+  "name": "XSettingsExport",
+  "description": "Exports settings to an XML file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XSettingsExport.html",
+  "params": [
+   {
+    "name": "node",
+    "description": "Path of the setting node to be exported (for project settings without the \"PROJECT\"!)"
+   },
+   {
+    "name": "XMLFile",
+    "description": "Full path and name of the target XML file"
+   },
+   {
+    "name": "prj",
+    "description": "Full path and name of the project. This parameter only has to be set for the export of project settings. The specified project has to be open."
+   }
+  ]
+ },
+ "XSettingsImport": {
+  "name": "XSettingsImport",
+  "description": "Imports project-, station-, company- or user settings from an XML file.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XSettingsImport.html",
+  "params": [
+   {
+    "name": "XmlFile",
+    "description": "Full name of an XML file. If the parameter is empty, a file selection dialog will appear to choose an XML file."
+   },
+   {
+    "name": "Node",
+    "description": "Node of settings to import"
+   },
+   {
+    "name": "Project",
+    "description": "Full name of the target project"
+   }
+  ]
+ },
+ "XSettingsRegisterAction": {
+  "name": "XSettingsRegisterAction",
+  "description": "Registers Add-ons.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XSettingsRegisterAction.html",
+  "params": [
+   {
+    "name": "path",
+    "description": "The path where the Add-on is located, e.g. \"..\\addon\\1.0.0\". Alternative to the parameter \"installFile\"."
+   },
+   {
+    "name": "installFile",
+    "description": "The complete path of the install.xml file. Alternative to the parameter \"path\"."
+   }
+  ]
+ },
+ "XSettingsUnregisterAction": {
+  "name": "XSettingsUnregisterAction",
+  "description": "Unregistration of Add-ons.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/XSettingsUnregisterAction.html",
+  "params": [
+   {
+    "name": "path",
+    "description": "The path where the Add-on is located, e.g. \"..\\addon\\1.0.0\". Alternative to the parameter \"installFile\"."
+   },
+   {
+    "name": "installFile",
+    "description": "The complete path of the install.xml file. Alternative to the parameter \"path\"."
+   }
+  ]
+ },
+ "backup": {
+  "name": "backup",
+  "description": "Action class for backup functions. Backs up a project and master data (forms, symbols, ...) to disk",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/backup.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed. - \"PROJECT\": Backing up the entire project. - \"MASTERDATA\": Backing up the master data."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "ARCHIVENAME",
+    "description": "Archive name. Name of the file where the backed up data is to be saved (without path information)."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory"
+   },
+   {
+    "name": "COMMENT",
+    "description": "Remark on backup (optional). The remark is written as a string to the corresponding property of the backed up project. Default = corresponding property is not set."
+   },
+   {
+    "name": "AUTOCOPYREFDATA",
+    "description": "Specifies whether external files that are referenced by the project are copied to the project's directory (the \"\\DOC\" and \"\\Images\" subdirectories) before the backup. (optional, 0 = No, 1 = Yes). Default = 0 Valid only if TYPE parameter equals \"PROJECT\". Images and documents included in project are always backup-ed."
+   },
+   {
+    "name": "INCLEXTDOCS",
+    "description": "Specifies whether documents are to be included in the backup (optional, 0 = No, 1= Yes). Default = 0"
+   },
+   {
+    "name": "INCLIMAGES",
+    "description": "Specifies whether image files are to be included in the backup (optional, 0 = No, 1=Yes). Default = 0"
+   },
+   {
+    "name": "BACKUPMETHOD",
+    "description": "Type of backup. - \"BACKUP\": Project is backed up - \"SOURCEOUT\": Project is filed off - \"ARCHIVE\": Project is archived."
+   },
+   {
+    "name": "MDTYPE",
+    "description": "Type of master data to be backed up. - \"SYMBOLS\", - \"MACROS\", - \"FORMS\", - \"ARTICLES\", - \"LANGUAGES\", - \"STANDARDSHEET\", - \"STATIONDATA\""
+   },
+   {
+    "name": "SOURCEPATH",
+    "description": "Source directory, only applies to backup of master data."
+   },
+   {
+    "name": "FILENAME",
+    "description": "Name of the file to be backed up. - The file name can be entered with or without the complete path. - The file extension must be specified. - A file extension with a wildcard is also possible (for example: /FILENAME:*.fn1, /FILENAME:*.*, /FILENAME:*sh) This only applies to the backup of master data."
+   }
+  ]
+ },
+ "changelayer": {
+  "name": "changelayer",
+  "description": "Changes graphical layer properties.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/changelayer.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   }
+  ]
+ },
+ "check": {
+  "name": "check",
+  "description": "Action class for checking functions: check a project and check pages.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/check.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action. Possible values are: - \"PROJECT\": Check project - \"PAGES\": Check pages - \"INSTALLATIONSPACE\": Check installation space - \"ONLYCOMPLETED\": Check project, only completed messages - \"PARTS\": Check parts"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "VERIFICATIONSCHEME",
+    "description": "Name of scheme used for the project check (optional, scheme name only, without path). When the parameter Type = \"PARTS\", then PROJECTNAME parameter is not required Default value: Most recently used scheme."
+   },
+   {
+    "name": "VERIFYCOMPLETEDONLY",
+    "description": "Verifies completed messages only, when set to 1. Default is 0. This parameter is only effective with the PROJECT and PARTS value of TYPE parameter, and without the PARTNUMBERn parameter."
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to \"Active\" check box in GUI Default value: 0"
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be checked (optional)."
+   },
+   {
+    "name": "SELn",
+    "description": "Identifier of the pages to be Checked (optional), where n is a number (e.g. /SEL1:38/4/12/0 (result from StorableObject.ToStringIdentifier())) parameters are only effective with the PAGE value of the TYPE parameter."
+   },
+   {
+    "name": "PARTNUMBERn",
+    "description": "Part number to be checked (optional), where n is a counter (e.g. /PARTNUMBER1:MyPartNumberA /PARTNUMBER2:MyPartNumberB"
+   },
+   {
+    "name": "PARTVARIANTn",
+    "description": "Part variant to be checked (optional), where n is a counter. Parameter is only effective with corresponding PARTNUMBER parameter (e.g. /PARTNUMBER1:MyPartNumberA /PARTVARIANT1:V2"
+   },
+   {
+    "name": "INSTALLATIONSPACENAME",
+    "description": "Name of the installation space to be checked. Value stored under property INSTALLATIONSPACE_DESIGNATION."
+   },
+   {
+    "name": "INSTALLATIONSPACENAMEn",
+    "description": "Name of the installation space to be checked, where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /STRUCTURE1:=EB3+ET1 /INSTALLATIONSPACENAME2:BR2 /STRUCTURE2:=EB3+ET2 etc. Value stored under property INSTALLATIONSPACE_DESIGNATION."
+   },
+   {
+    "name": "STRUCTURE",
+    "description": "Structure identifier of installation space to be checked. This parameter is only effective with the INSTALLATIONSPACE value of the TYPE parameter."
+   },
+   {
+    "name": "STRUCTUREn",
+    "description": "Structure identifier of installation space to be checked, where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /STRUCTURE1:=EB3+ET1 /INSTALLATIONSPACENAME2:BR2 /STRUCTURE2:=EB3+ET2 etc. This parameter is only effective with the INSTALLATIONSPACE value of the TYPE parameter."
+   }
+  ]
+ },
+ "compress": {
+  "name": "compress",
+  "description": "Action class to compress projects.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/compress.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Configuration scheme for project compression (optional). Default value: Recent configuration scheme. The most recently used scheme is taken if an empty string is passed."
+   }
+  ]
+ },
+ "devicelist": {
+  "name": "devicelist",
+  "description": "Action class for device list functions: import, export, and delete device lists.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/devicelist.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"IMPORT\": Import device list - \"EXPORT\": Export device list - \"DELETE\": Delete device list"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is calledfrom GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "The directory and the file name of the device list to be imported must be specified here."
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "The directory and the file name of the device list to be exported must be specified here."
+   },
+   {
+    "name": "FORMAT",
+    "description": "Optional: File format (\"XDLXmlExporter\",\"XDLTxtImporterExporter\", \"XDLCsvImporterExporter\", or user-defined format) Default: \"XDLXmlExporter\""
+   }
+  ]
+ },
+ "edit": {
+  "name": "edit",
+  "description": "Action class for edit functions: Opens a project, opens a specific page (identified by the page name), opens a page with a specific device (identified by the device name) or opens a specific page (identified by the page name) and sets the cursor at the X and Y coordinates.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/edit.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not specified, the selected project is used when the action is called from GUI (e.g. from a script or the ribbon bar). If called from the Windows command line, the PROJECTNAME parameter must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to open (optional). Required if the X and Y parameters are specified."
+   },
+   {
+    "name": "DEVICENAME",
+    "description": "Name of an item (optional)."
+   },
+   {
+    "name": "INSTALLATIONSPACE",
+    "description": "Name of the layout space to be opened (optional). Cannot be used with the PAGENAME parameter and with the DEVICENAME3D parameter."
+   },
+   {
+    "name": "DEVICENAME3D",
+    "description": "Name of an item inside of an layout space (optional). Cannot be used with the INSTALLATIONSPACE parameter."
+   },
+   {
+    "name": "IGNOREWHENOPEN",
+    "description": "Specifies whether to ignore action calls when a project is already open. (optional, 0 = No, 1 = Yes)."
+   }
+  ]
+ },
+ "export": {
+  "name": "export",
+  "description": "Action to export pages and projects in graphical, DXF, DWG, PXF format.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/export.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"PXFPROJECT\": Export project in EPJ format. - \"GRAPHICPROJECT\": Export project in graphical format (TIF, GIF, PNG, JPG). - \"GRAPHICPAGE\": Export pages in graphical format (TIF, GIF, PNG, JPG). - \"DXFPROJECT\": Export project in DXF format. - \"DWGPROJECT\": Export project in DWG format. - \"DXFPAGE\": Export page(s) in DXF format. - \"DWGPAGE\": Export page(s"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "If the value of the TYPE parameter is \"PXFPROJECT\", then this parameter contains the name of the project to be exported (optional). Default value = Project name. If the TYPE parameter is set to \"PDFPROJECTSCHEME\" or \"PDFPAGESSCHEME\" then this parameter contains the name of the export file (required, full path name). The file extension is automatically added by the system."
+   },
+   {
+    "name": "EXPORTMASTERDATA",
+    "description": "Specifies whether master data is to be included in the export (optional, 0 = No, 1 = Yes). Default value = 1. This parameter is only effective with the following value of the TYPE parameter: \"PXFPROJECT\"."
+   },
+   {
+    "name": "EXPORTCONNECTIONS",
+    "description": "Specifies whether connections are to be included in the export (optional, 0 = No, 1 = Yes). Default value = 0. This parameter is only effective with the following value of the TYPE parameter: \"PXFPROJECT\"."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be exported (optional). This parameter is only effective with the \"DXFPAGE\", \"DXFPROJECT\", \"DWGPAGE\", \"DWGPROJECT\", \"GRAPHICPAGE\", \"GRAPHICPROJECT\" values of the TYPE parameter."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be exported (optional), where n is a number (e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc.). These parameters are only effective with the \"DXFPAGE\", \"DWGPAGE\", \"PDFPAGESSCHEME\" values of the TYPE parameter."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory (optional). Relevance of this parameter. For \"GRAPHICPAGE\", \"GRAPHICPROJECT\": Directory where the graphical files are stored. If this directory does not exist yet, it is created. Below this directory, a new directory with the name of the project is created into which the individual image files are saved. For \"DXFPAGE\", \"DXFPROJECT\", \"DWGPAGE\", \"DWGPROJECT\", Directory to which the "
+   },
+   {
+    "name": "FORMAT",
+    "description": "Output format (optional). Supported export formats are: - \"BMP\": available color depth: 1, 4, 8, 16, 24 and 32 - \"TIF\": available color depth: 1, 4, 8, 24 and 32 - \"GIF\": color depth is irrelevant - \"PNG\": available color depth: 1, 4, 8, 16, 24 and 32 - \"JPG\": available color depth: 1, 4, 8, 16, 24 and 32. Default value = \"TIF\". This parameter is only effective with the \"GRAPHICPAGE\" and \"GRAPHICP"
+   },
+   {
+    "name": "COLORDEPTH",
+    "description": "Color depth of the image (optional, default value = 24). The possible values are 1, 8, 16, 24, 32. This parameter is only effective with the \"GRAPHICPAGE\" and \"GRAPHICPROJECT\" values of the TYPE parameter."
+   },
+   {
+    "name": "IMAGEWIDTH",
+    "description": "Image width in pixels (optional, default value = 80). The height is automatically computed from the page dimensions. This parameter is only effective with the \"GRAPHICPAGE\" and \"GRAPHICPROJECT\" values of then TYPE parameter."
+   },
+   {
+    "name": "IMAGECOMPRESSION",
+    "description": "Type of compression for output in TIF format (optional). This parameter has no effect on other output formats. The color depth is always 1 for CCITT3, CCITT4, and RLE compression, that is, a binary image is created. The possible values are LZW, RLE, CCITT3, CCITT4, NONE. Default value = NONE. This parameter is only effective with the \"GRAPHICPAGE\" and \"GRAPHICPROJECT\" values of the TYPE parameter."
+   },
+   {
+    "name": "BLACKWHITE",
+    "description": "Sets the color scheme for the output if the TYPE parameter has the value GRAPHICPAGE or GRAPHICPROJECT (optional, 0 = color, 1 = black and white). Default value : 1 Note: This does not affect the image format or size, i.e. the files are not reduced. It is only effective with the \"GRAPHICPAGE\" and \"GRAPHICPROJECT\" values of the TYPE parameter. This is also used for \"PDFPROJECTSCHEME\" and \"PDFPAGESS"
+   },
+   {
+    "name": "EXPORTSCHEME",
+    "description": "Scheme for DXF / DWG and PDF export (optional). This parameter can be the user defined DXF / DWG and PDF export scheme settings (myScheme) or the default scheme settings of Eplan (Standard Settings). You can use the EXPORTSCHEME parameter to filter the pages used for the export by creating a scheme with a page filter for the selected pages. If this parameter does not exist or is empty (\"\"), the mo"
+   },
+   {
+    "name": "USEZOOM",
+    "description": "If set to 1, a zoom window is to be used when jumping from navigation pages to components in the PDF file. The components are then displayed centered within the zoom window."
+   },
+   {
+    "name": "ZOOMLEVEL",
+    "description": "If USEZOOM is set to 1, you set in ZOOMLEVEL the desired zoom level in \"mm\". The value entered reflects the height of the screen section that is to be displayed magnified after the jump. A smaller value (e.g. 20 mm) thus leads to a greatly magnified display of the respective component on the screen. You can enter values between 1 and 3500. If USEZOOM is 0, ZOOMLEVEL has no influence on the result."
+   },
+   {
+    "name": "USESIMPLELINK",
+    "description": "If set to 1, only a simple link is created in the PDF. If set to 0 then \"three-way\" jumps are available for all components in the PDF."
+   },
+   {
+    "name": "FASTWEBVIEW",
+    "description": "If set to 1, fast web display will be enabled in the PDF."
+   },
+   {
+    "name": "READONLYEXPORT",
+    "description": "If set to 1, the PDF file will be write protected."
+   },
+   {
+    "name": "USEPRINTMARGINS",
+    "description": "If set to 1, print margins will be used during PDF export ignoring the setting in scheme (optional). If not passed, setting from scheme will be applied. This parameter is only effective with the \"PDFPAGESSCHEME\" and \"PDFPROJECTSCHEME\" values of the TYPE parameter."
+   },
+   {
+    "name": "TARGET",
+    "description": "Specifies whether the target is disk or from Settings. It may have the following values: \"Disk\", \"FromSettings\" (case insensitive). If value is \"FromSettings\", the target for the export (also the target directory) is specified by the settings (scheme). If value is \"Disk\", the target directory is specified by the DESTINATIONPATH parameter. (Note: If not specified, the target is disk. This option sh"
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Language identifier(s). Indicates the displayed language of the export. Note: This parameter is case-sensitive. Correct language specifiers are: \"en_US\", \"de_DE\", etc. If you specify several language identifiers, these must be separated by commas without blanks (for example \"en_US,de_DE\"). This parameter does not affect texts for which a language was specified with the setting \"One language (varia"
+   },
+   {
+    "name": "EXPORTMODEL",
+    "description": "This is a boolean parameter. If true then any 3D models in the project will be exported along with the desired pages. Note that there are also settings in the scheme that control which models will be exported. This parameter is only effective with the following values of the TYPE parameter: \"PDFPROJECTSCHEME\" and \"PDFPAGESSCHEME\"."
+   }
+  ]
+ },
+ "export3d": {
+  "name": "export3d",
+  "description": "Action to export installation spaces into 3D formats.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/export3d.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"STEP\": Export to STEP format. - \"JT\": Export to JT format."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "INSTALLATIONSPACENAME",
+    "description": "Name of a layout space to be exported."
+   },
+   {
+    "name": "INSTALLATIONSPACENAMEn",
+    "description": "Names of a layout spaces to be exported (optional), where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /INSTALLATIONSPACENAME2:BR2 /INSTALLATIONSPACENAME:BR3 etc."
+   },
+   {
+    "name": "STRUCTURE",
+    "description": "Structure identifier of the InstallationSpace to be exported (optional)."
+   },
+   {
+    "name": "STRUCTUREn",
+    "description": "Structure identifiers of the InstallationSpaces to be exported (optional), where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /STRUCTURE1:=EB3+ET1 /INSTALLATIONSPACENAME2:BR2 /STRUCTURE2:=EB3+ET2 etc."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory. If this directory does not exist yet, it is created."
+   },
+   {
+    "name": "EXPORTSCHEME",
+    "description": "Export scheme (optional). If the parameter does not exist or is empty (\"\"), the last used scheme will be applied"
+   },
+   {
+    "name": "SEPARATEFILES",
+    "description": "Determines whether separate files should be created. Only effective with TYPE parameter set to \"STEP\"."
+   },
+   {
+    "name": "FILENAME",
+    "description": "File name (optional). Only effective with TYPE parameter set to \"JT\"."
+   }
+  ]
+ },
+ "exportToGraphics": {
+  "name": "exportToGraphics",
+  "description": "Action to export pages and projects to graphical (TIF, GIF, PNG, JPG) format.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/exportToGraphics.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: - \"GRAPHICPROJECT\": Export project in graphical format (TIF, GIF, PNG, JPG). - \"GRAPHICPAGE\":Export pages in graphical format (TIF, GIF, PNG, JPG)"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be exported (optional). This parameter is only effective with the GRAPHICPAGE value of the TYPE parameter."
+   },
+   {
+    "name": "EXPORTSCHEME",
+    "description": "Scheme for graphical export (optional). Provides default values for other optional parameters. If this parameter does not exist or is empty, the most recently used graphical export scheme is taken."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory where the graphical files are stored. If this directory does not exist yet, it is created. In case of project export, below this directory, a new directory with the name of the project is created into which the individual image files are saved."
+   },
+   {
+    "name": "FORMAT",
+    "description": "Output format. Supported export formats are: - BMP: available color depth: 1, 4, 8, 16, 24 and 32 - TIF: available color depth: 1, 4, 8, 24 and 32 - GIF: color depth is irrelevant - PNG: available color depth: 1, 4, 8, 16, 24 and 32 - JPG: available color depth: 1, 4, 8, 16, 24 and 32. This parameter is optional. If not specified, a default value is taken from the scheme settings."
+   },
+   {
+    "name": "COLORDEPTH",
+    "description": "Color depth of the image.The possible values are 1, 8, 16, 24, 32. This parameter is optional. If not specified, a default value is taken from the scheme settings."
+   },
+   {
+    "name": "IMAGEWIDTH",
+    "description": "Image width in pixels. The height is automatically computed from the page dimensions. This parameter is optional. If not specified, a default value is taken from the scheme settings."
+   },
+   {
+    "name": "IMAGECOMPRESSION",
+    "description": "Type of compression for the output in Tiff format. Possible values are LZW, RLE, CCITT3, CCITT4, NONE. This parameter has no effect on other output formats. The color depth is always 1 for CCITT3, CCITT4, and RLE compression, that is, a binary image is created. This parameter is optional. If not specified, a default value is taken from the scheme settings."
+   },
+   {
+    "name": "BLACKWHITE",
+    "description": "The output is in black and white. Note: This does not affect the image format or size. This parameter is optional. Default value: 1 (black/white)"
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to the \"Active\" check box in GUI page navigator. Default value: 0."
+   }
+  ]
+ },
+ "gedRedraw": {
+  "name": "gedRedraw",
+  "description": "Action class for GED redraw.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/gedRedraw.html",
+  "params": []
+ },
+ "generate": {
+  "name": "generate",
+  "description": "Action class for generate functions: generate connections and generate cables.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/generate.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: CONNECTIONS: Connection generation CABLES: Cable generation"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "CREATIONSCHEME",
+    "description": "Name of the scheme; for cable generation (optional). Default value = Most recently used scheme. This only applies to cable generation."
+   },
+   {
+    "name": "NUMBERINGSCHEME",
+    "description": "Name of the scheme; for cable numbering (optional). Default value = Recent scheme. This only applies to cable generation."
+   },
+   {
+    "name": "AUTOSELECTSCHEME",
+    "description": "Name of the scheme; for automatic cable selection (optional). Default value = Recent scheme. This only applies to cable generation."
+   },
+   {
+    "name": "KEEPOLDNAMES",
+    "description": "Specifies whether existing cable names are to be preserved (optional, 0 = No, 1 = Yes). Default value = 1 This only applies to cable generation."
+   },
+   {
+    "name": "STARTVALUE",
+    "description": "Start value for DT counter (optional). Default value = 1 Only applies to cable generation."
+   },
+   {
+    "name": "STEPVALUE",
+    "description": "Increment; value by which the DT counter is increased (optional). Default value = 1 Only applies to cable generation."
+   },
+   {
+    "name": "ONLYAUTOCABLES",
+    "description": "Specifies whether the cable selection should be made only for automatically generated cables (optional, 0 = No, 1 = Yes). Default value = 1 Only applies to cable generation."
+   },
+   {
+    "name": "REBUILDALLCONNECTIONS",
+    "description": "If set to 1, the action rebuilds all connections, otherwise it updates only."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be updated (optional). This parameter is only effective with the CONNECTIONS value of the TYPE parameter."
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to \"Active\" check box in GUI. These parameters are only effective with the CONNECTIONS value of the TYPE parameter. Default value = 0"
+   },
+   {
+    "name": "PAGEFILTERNAME",
+    "description": "Pages are read from pagefilter with the name pagefiltername.These parameters are only effective with the CONNECTIONS value of the TYPE parameter."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be included in connections update (optional), where n is a number e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc. These parameters are only effective with the CONNECTIONS value of the TYPE parameter."
+   },
+   {
+    "name": "SELn",
+    "description": "Identifier of the pages to be included in connections update (optional), where n is a number (e.g. /SEL1:38/4/12/0 (result from StorableObject.ToStringIdentifier())) parameters are only effective with the CONNECTIONS value of the TYPE parameter."
+   }
+  ]
+ },
+ "generatemacros": {
+  "name": "generatemacros",
+  "description": "Action for generating macros from project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/generatemacros.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be considered (optional), where n is a number e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc."
+   },
+   {
+    "name": "INSTALLATIONSPACENAMEn",
+    "description": "Names of the InstallationSpaces to be considered (optional), where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /INSTALLATIONSPACENAME2:BR2 /INSTALLATIONSPACENAME:BR3 etc."
+   },
+   {
+    "name": "STRUCTUREn",
+    "description": "Structure identifiers of the InstallationSpaces to be exported (optional), where n is a number e.g. /INSTALLATIONSPACENAME1:BR1 /STRUCTURE1:=EB3+ET1 /INSTALLATIONSPACENAME2:BR2 /STRUCTURE2:=EB3+ET2 etc."
+   },
+   {
+    "name": "WINDOWMACRODIR",
+    "description": "Window macro directory"
+   },
+   {
+    "name": "PAGEMACRODIR",
+    "description": "Page macro directory"
+   },
+   {
+    "name": "FILTERSCHEME",
+    "description": "Filter scheme"
+   },
+   {
+    "name": "OVERWRITE",
+    "description": "Overwrite already existing files"
+   }
+  ]
+ },
+ "graphicallayertable": {
+  "name": "graphicallayertable",
+  "description": "Action class for graphical layer table functions: import, export.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/graphicallayertable.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"IMPORT\": Import graphical layer table - \"EXPORT\": Export graphical layer table"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path(optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "The directory and the file name of the table to be imported must be specified here."
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "The directory and the file name of the table to be exported must be specified here."
+   }
+  ]
+ },
+ "import": {
+  "name": "import",
+  "description": "Action for importing projects, macros, and drawings.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/import.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"PXFPROJECT\": Import PXF project - \"DXFDWGFILES\": Insert DXF / DWG drawings in macros. - \"DXFPAGE\": Insert DXF drawing into a page - \"DWGPAGE\": Insert DWG drawing into a page - \"PDFCOMMENTS\": Import PDF comments into project. There are some settings that need to be set before doing import. For more information please see Eplan Electric P8 Help."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path. Is required for the following values of the TYPE parameter: \"PDFCOMMENTS\". Is optional if the TYPE parameter has the following values: \"PXFPROJECT\", \"DXFDWGFILES\", \"DXFPAGE\" and \"DWGPAGE\". If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be s"
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "Path and name. - \"PXFPROJECT\": Path and name of the file to be imported. - \"DXFPAGE\", \"DWGPAGE\", \"PDFCOMMENTS\": Path and name of the file to be imported."
+   },
+   {
+    "name": "SOURCEPATH",
+    "description": "Directory where the DXF/DWG files are located. Only applies to the \"DXFDWGFILES\" value of the TYPE parameter"
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Destination directory where the imported projects and macros are stored. Only applies to the \"DXFDWGFILES\" values of the TYPE parameter. If this value contains \"EPLAN4\\P\" (e.q. \"C:\\EPLAN4\\P\\SOMEPROJECTDIR\"), then such a directory (DESTINATIONPATH) will be created and project will be imported there. If DESTINATIONPATH parameter doesn't contain \"EPLAN4\\P\", then project will be imported and strDestin"
+   },
+   {
+    "name": "IMPORTSCHEME",
+    "description": "Name of the DXF/DWG import scheme (only name, without full path) (optional). Default value = Most recently used scheme. If this parameter does not exist or is empty (\"\"), the most recently used scheme is taken. Only applies to the TYPE parameter values: \"DXFPAGE\", \"DWGPAGE\", \"DXFDWGFILES\""
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of page into which the CAD drawing is to be inserted. Only applies to the \"DXFPAGE\" and \"DWGPAGE\" values of the TYPE parameter"
+   },
+   {
+    "name": "XSCALE",
+    "description": "Scaling in X direction. Default value = 1. Only applies to the DXFPAGE and DWGPAGE values of the TYPE parameter. (optional)"
+   },
+   {
+    "name": "YSCALE",
+    "description": "Scaling in Y direction. Default value = 1. Only applies to the DXFPAGE and DWGPAGE values of the TYPE parameter. (optional)"
+   },
+   {
+    "name": "XOFFSET",
+    "description": "Move to X direction. Default value = 0. Only applies to the DXFPAGE and DWGPAGE values of the TYPE parameter. (optional)"
+   },
+   {
+    "name": "YOFFSET",
+    "description": "Move to Y direction. Default value = 0. Only applies to the DXFPAGE and DWGPAGE values of the TYPE parameter. (optional)"
+   },
+   {
+    "name": "MACROPROJECT",
+    "description": "Full path of new macro project with file extension *.elk."
+   },
+   {
+    "name": "ONLYMACROPROJECT",
+    "description": "Determines whether only the macro projects are created (optional). - 1: Only create macro project. - 0: automatic export of all macros from created project to macro directory. Default value = 0"
+   },
+   {
+    "name": "CODEPAGE",
+    "description": "Default value = 437."
+   },
+   {
+    "name": "DRIVE",
+    "description": ""
+   },
+   {
+    "name": "SOURCEMACROPATH",
+    "description": "The value must be uppercase and the macro must be located at the path: (drive):\\EPLAN4\\M\\."
+   },
+   {
+    "name": "BALANCEARTICLES",
+    "description": "Synchronization of imported parts data with database (optional). Default value = 0"
+   },
+   {
+    "name": "GENERATEAUTOMATICCABLES",
+    "description": "Indicates whether automatic cables are generated (optional). Default value = 0."
+   },
+   {
+    "name": "DESTINATIONFILE",
+    "description": "Destination path with file name."
+   },
+   {
+    "name": "VERIFY",
+    "description": "Indicates whether a project check is started after the import (0 or 1) (optional). Default value = 0"
+   }
+  ]
+ },
+ "import3d": {
+  "name": "import3d",
+  "description": "Action for importing 3d data.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/import3d.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"STEP\": Import 3D data in STEP format - \"DESIGNSPACE\": Import design space (as a STEP file) - \"JT\": Import 3D data in JT format For more information please see Eplan Platform Help."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path. If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "Path and name."
+   },
+   {
+    "name": "SCHEME",
+    "description": "Import scheme (optional). If the parameter does not exist or is empty (\"\"), the last used scheme will be applied."
+   }
+  ]
+ },
+ "label": {
+  "name": "label",
+  "description": "Action class to create labels for projects.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/label.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Configuration scheme (optional). Default value: Most recently used configuration scheme."
+   },
+   {
+    "name": "FILTERSCHEME",
+    "description": "Filter scheme (optional). Default value: Filter scheme name is taken from configuration scheme. If this parameter is not available, nofiltering can be performed."
+   },
+   {
+    "name": "SORTSCHEME",
+    "description": "Sorting scheme. Default value: Sorting scheme name is taken from configuration scheme. If this parameter is not available, no sorting can be performed."
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Language (e.g., en_US or ??_?? for all display languages)."
+   },
+   {
+    "name": "DESTINATIONFILE",
+    "description": "Target file where the labeling results are saved. The following formats are supported: txt, xls, xlsx, xml. Format must be set according to the extension that is in CONFIGSCHEME. This parameter supports PROJPROP_* Eplan variables. Default value: file indicated by a configuration scheme (CONFIGSCHEME parameter)"
+   },
+   {
+    "name": "RECREPEAT",
+    "description": "Optional: Number of repetitions per label (&gt;=1). Default value: 0"
+   },
+   {
+    "name": "TASKREPEAT",
+    "description": "Optional: Number of repetitions of total output (&gt;=1). Default value: 0"
+   },
+   {
+    "name": "SHOWOUTPUT",
+    "description": "Optional: Decide whether the output file should be shown. Default value: 0"
+   },
+   {
+    "name": "USESELECTION",
+    "description": "Optional: Decide if use the selection as an input objects for labeling. Default value: 0"
+   }
+  ]
+ },
+ "masterdata": {
+  "name": "masterdata",
+  "description": "Action class for operations related to EPLAN master data.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/masterdata.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: UPDATEPROJECT: Updates project master data"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   }
+  ]
+ },
+ "navigateToEEC": {
+  "name": "navigateToEEC",
+  "description": "Action class to navigate to an object in the EPLAN Engineering Configuration.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/navigateToEEC.html",
+  "params": [
+   {
+    "name": "EECOBJECTID",
+    "description": "Object ID in the EEC to navigate to."
+   }
+  ]
+ },
+ "partslist": {
+  "name": "partslist",
+  "description": "Action class for exporting and importing parts and other parts management items like addresses, constructions, terminals, accessory lists and accessory placements. Allows also to delete stored properties.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/partslist.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: - \"IMPORT\": Import parts lists - \"EXPORT\": Export parts lists - \"IMPORTTOSYSTEM\": Import to parts management - \"EXPORTFROMSYSTEM\": Export from parts management - \"DELETESTOREDPROPERTIES\": Delete stored properties from project"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "The directory and the file name of the file to be imported must be specified here. This only applies to \"IMPORT\"."
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "The directory and the file name of the file to be exported must be specified here. The file extension is automatically added by the system. This only applies to \"EXPORT\""
+   },
+   {
+    "name": "FORMAT",
+    "description": "File format (\"XPalXmlExporter\",\"XPalCSVConverter\", or user-defined format) (optional). For parts management (\"XPamImportXml\" and \"XPamExportXml\") - \"XPalXmlExporter\" is the default format value for tasks of TYPE \"IMPORT\" and \"EXPORT\". - \"XPamExportXml\" is the default format value for tasks of TYPE \"IMPORTTOSYSTEM\" and \"EXPORTFROMSYSTEM\". See also \"XMLConverter\" and \"XMLConverterCategories\" namespa"
+   },
+   {
+    "name": "FIELDASSIGNMENTSCHEME",
+    "description": "Name of scheme that is used to assign fields in some article properties (optional)."
+   },
+   {
+    "name": "MODE",
+    "description": "Import mode (optional). Supported modes are: - 0: Append new records only - 1: Update existing records only - 2: Update existing records and append new ones Default value = 0, append new records only. If an invalid value is set, the default value 0 will be used."
+   },
+   {
+    "name": "ADDITIONAL_LANGUAGE",
+    "description": "Valid only when TYPE has \"IMPORTTOSYSTEM\" value (optional). If the value of this parameter is 1, multi-language properties will be updated with another language values rather than being replaced with the file's content. If the parameter is omitted, content of the file replaces values of multi-language properties."
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Configuration scheme for deleting stored properties (optional). Default value: Recent configuration scheme. The most recently used scheme is taken if an empty string is passed. This applies only to delete stored properties."
+   }
+  ]
+ },
+ "partsmanagementapi": {
+  "name": "partsmanagementapi",
+  "description": "Action class for exporting and importing parts and other parts management items like addresses, constructions, terminals, accessory lists and accessory placements.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/partsmanagementapi.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: - \"IMPORT\": Import parts (and other record types) - \"EXPORT\": Export parts (and other record types) - \"EXPORTPARTS\": Exports parts via the property numbers of specified properties - \"EXPORTMANUFACTURERS\": Exports manufacturers via the property numbers of specified properties - \"EXPORTCONSTRUCTIONS\": Exports construction via the property numbers of specified properties"
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "The directory and the file name of the file to be imported must be specified here. This only applies to \"IMPORT\"."
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "The directory and the file name of the file to be exported must be specified here. The file extension is automatically added by the system. This only applies to \"EXPORT\"."
+   },
+   {
+    "name": "FORMAT",
+    "description": "File format (\"XPamImportXml\",\"XPamExportXml\", or user-defined format) (optional). \"IXPartsImportExportEdz\" - export to .edz and import from .edz. - \"XPamExportXml\" is the default format value for tasks of TYPE \"EXPORT\". - \"XPamImportXml\" is the default format value for tasks of TYPE \"IMPORT\"."
+   },
+   {
+    "name": "PARTNUMBER",
+    "description": "Used for exporting parts: Part number of article (optional)."
+   },
+   {
+    "name": "MANUFACTURER",
+    "description": "Used for exporting addresses: Long name of an address (optional)."
+   },
+   {
+    "name": "CONSTRUCTION",
+    "description": "Used for exporting constructions: Name of construction (optional)."
+   },
+   {
+    "name": "CONNECTIONPOINTPATTERN",
+    "description": "Used for exporting terminals: Name of terminal (optional)."
+   },
+   {
+    "name": "ACCESSORYLIST",
+    "description": "Used for exporting accessory lists: Name of accessorylist (optional)."
+   },
+   {
+    "name": "ACCESSORYPLACEMENT",
+    "description": "Used for exporting accessory placements: Name of accessoryplacement (optional)."
+   },
+   {
+    "name": "MODE",
+    "description": "Used for Importing: Import mode (optional). Supported modes are: - 0: Append new records only - 1: Update existing records only - 2: Update existing records and append new ones - 3: Replace existing records and append new ones Default value = 0, append new records only. If an invalid value is set, the default value 0 will be used."
+   },
+   {
+    "name": "ADDITIONAL_LANGUAGE",
+    "description": "Valid only when TYPE has \"IMPORT\" value (optional). If the value of this parameter is 1, multi-language properties will be updated with another language values rather than being replaced with the file's content. If the parameter is omitted, content of the file replaces values of multi-language properties."
+   },
+   {
+    "name": "FILTERSCHEME",
+    "description": "Configuration scheme for export parts. Filter is empty by default. Using scheme allows to filter which items (e.g. parts, addresses, constructions, etc.) should be imported or exported."
+   },
+   {
+    "name": "PROPERTYIDn",
+    "description": "Article property number. Where n in PROPERTYIDn is a number corresponding to n number in PROPERTYVALUEn."
+   },
+   {
+    "name": "PROPERTYVALUEn",
+    "description": "Value for given article property number. Where n in PROPERTYVALUEn is a number corresponding to n number in PROPERTYIDn."
+   },
+   {
+    "name": "INCLUDEREFERENCES",
+    "description": "Used for including the exporing the referenced data completely. But it is only valid for exporting EDZ files"
+   }
+  ]
+ },
+ "plcservice": {
+  "name": "plcservice",
+  "description": "Exports/imports PLC data using the specified converter.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/plcservice.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"BUSDATAEXPORT\": Bus data export. - \"BUSDATAIMPORT\": Bus data import. - \"GENERATEPLCSCHEMATIC\": Schematics generation. - \"EXPORTADDRESSOVERVIEW\": Address overview export. This type corresponds to \"Export address space assignment\" in GUI. - \"EXPORTASSIGNMENTLIST\": Assignment List export."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path."
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Language identifier This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\", \"BUSDATAIMPORT\", \"EXPORTASSIGNMENTLIST\""
+   },
+   {
+    "name": "CONVERTERID",
+    "description": "Identification for busdata exporter. Values are: - \"PlcDcExchangerBeckhoffTC3AML\" = Beckhoff TwinCAT 3 (AR APC 1.1.0) - \"PlcDcExchangerBoschAML\" = Bosch Nexeed Automation (AR APC 1.0.0) - \"PlcDcExchangerLogiCals3AML\" = logi.cals logi.CAD 3 (AR APC 1.1.0) - \"PlcDcExchangerMitsubishiAML\" = Mitsubishi iQ Works (AR APC 1.0.0) - \"PlcDcExchangerMitsubishi110AML\" = Mitsubishi iQ Works (AR APC 1.1.0) - \"P"
+   },
+   {
+    "name": "CONFIGURATIONPROJECT",
+    "description": "The name of the PLC configuration data set to export. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\", \"EXPORTADDRESSOVERVIEW\", \"EXPORTASSIGNMENTLIST\""
+   },
+   {
+    "name": "DESTINATIONFILE",
+    "description": "Destination file for data export. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\", \"EXPORTADDRESSOVERVIEW\", \"EXPORTASSIGNMENTLIST\""
+   },
+   {
+    "name": "SOURCEFILE",
+    "description": "Source file for data import. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAIMPORT\""
+   },
+   {
+    "name": "OVERWRITE",
+    "description": "If the output file already exists, this parameter specifies whether it should be overwritten. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\""
+   },
+   {
+    "name": "FORMAT",
+    "description": "Format of export file(optional). This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\". Some of the Converters, which have multiple formats are listed here along with the possible format values - \"PlcDcExchangerRockwellArchitectAML\" = \"AutomationML AR APC V1.0.0\" - \"PlcDcExchangerRockwellArchitectAML\" = \"AutomationML AR APC V1.1.0\" - \"PlcDcExchangerRockw"
+   },
+   {
+    "name": "EXPORTPORTSPECIFICINTERCONNECTION",
+    "description": "Export port-specific interconnection(optional). Possible values: 0 = No, 1 = Yes. If the parameter is not used, the default value is the same as what is currently set in the GUI. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\""
+   },
+   {
+    "name": "EXPORTACCESSORIES",
+    "description": "Export accessories(optional). Possible values: 0 = No, 1 = Yes. If the parameter is not used, the default value is the same as what is currently set in the GUI. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\""
+   },
+   {
+    "name": "EXPORTDRIVES",
+    "description": "Export drives(optional). Possible values: 0 = No, 1 = Yes. If the parameter is not used, the default value is the same as what is currently set in the GUI. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\""
+   },
+   {
+    "name": "EXPORTDEVICESPECIFICCONFIGURATIONVALUES",
+    "description": "Export device-specific configuration values(optional). Possible values: 0 = No, 1 = Yes. If the parameter is not used, the default value is the same as what is currently set in the GUI. This parameter is only effective with the following values of the TYPE parameter: \"BUSDATAEXPORT\""
+   },
+   {
+    "name": "IMPORTMATCH",
+    "description": "Matching options for PLC data import. The import process tries to match imported objects with those existing in the project. Based on the option selected, the matching may be performed by internal object ids or by objects' identifying names. If an imported object is matched with an existing function, properties of the existing function will be updated whereas for unmatched imported objects, new fu"
+   },
+   {
+    "name": "CONFIGFILE",
+    "description": "A path to a \"GenerateSchematic\" configuration file for schematics generation. This parameter is only effective with the following values of the TYPE parameter: \"GENERATEPLCSCHEMATIC\""
+   },
+   {
+    "name": "SINGLELINEPAGES",
+    "description": "If set, single-line pages will be generated. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"GENERATEPLCSCHEMATIC\""
+   },
+   {
+    "name": "MULTILINEPAGES",
+    "description": "If set, multi-line pages will be generated. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"GENERATEPLCSCHEMATIC\""
+   },
+   {
+    "name": "OVERVIEWS",
+    "description": "If set, overview pages will be generated. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"GENERATEPLCSCHEMATIC\""
+   },
+   {
+    "name": "RACKOVERVIEWS",
+    "description": "If set, rack overview pages will be generated. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"GENERATEPLCSCHEMATIC\""
+   },
+   {
+    "name": "PLCSTATION",
+    "description": "The name of the PLC station name to export. This parameter is only effective with the following values of the TYPE parameter: \"EXPORTADDRESSOVERVIEW\", \"EXPORTASSIGNMENTLIST\""
+   },
+   {
+    "name": "PLCCPU",
+    "description": "The name of the PLC CPU name to export. This parameter is only effective with the following values of the TYPE parameter: \"EXPORTADDRESSOVERVIEW\", \"EXPORTASSIGNMENTLIST\""
+   }
+  ]
+ },
+ "preparemacros": {
+  "name": "preparemacros",
+  "description": "Action for preparing project for macro generation.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/preparemacros.html",
+  "params": [
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be considered (optional), where n is a number e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc."
+   },
+   {
+    "name": "GroupMacroBoxes",
+    "description": "Group macro boxes with their content. Possible values: 0 = \"Do nothing\", 1 = \"Create Groups\" (default)."
+   },
+   {
+    "name": "GroupPageMacros",
+    "description": "Group content of a page macro. Possible values: 0 = \"Do nothing\" (default), 1 = \"Create Groups\"."
+   },
+   {
+    "name": "SetHandleActive",
+    "description": "Set handle checkbox active. Possible values: 0 = \"Do nothing\" (default), 1 = \"Activate handle checkbox\"."
+   }
+  ]
+ },
+ "print": {
+  "name": "print",
+  "description": "Action class to print projects and pages.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/print.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: - \"PROJECT\": Print project. - \"PAGES\": Print pages."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PRINTERNAME",
+    "description": "Name of printer (optional). Default value: Printer set on your computer."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Page to be printed (optional)."
+   },
+   {
+    "name": "PRINTCOLLATE",
+    "description": "Sorted order (optional, 0 = No, 1 = Yes). Default value: 1"
+   },
+   {
+    "name": "PRINTREVERSE",
+    "description": "Reverse order (optional, 0 = No, 1 = Yes). Default value: 0"
+   },
+   {
+    "name": "NUMBER",
+    "description": "Number of copies. Default:1"
+   },
+   {
+    "name": "DESTINATIONFILE",
+    "description": "Path and name of the output file. Default value: Printer set or Specified"
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to \"Active\"check box in GUI. Default value: 0"
+   },
+   {
+    "name": "PRINTCHANGEDPAGES",
+    "description": "Print only changed pages"
+   }
+  ]
+ },
+ "projectmanagement": {
+  "name": "projectmanagement",
+  "description": "Action class for project management.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/projectmanagement.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: - \"READPROJECTINFO\": Load project information from an XML file into the project. - \"PUBLISHSMARTPRODUCTION\": Publishes project for EPLAN Smart Production. - \"CREATESNAPSHOTCOPY\": Creates snapshot copy of the project. - \"EXPORTPROPERTYPLACEMENTSSCHEMAS\": Exports property placements schemes. - \"IMPORTPROPERTYPLACEMENTSSCHEMAS\": Imports property placements schemes. - \"RE"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is call from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "FILENAME",
+    "description": "Full path / name of the XML file to be imported, or full file path to be published, or full file path to target project when creating snapshot copy."
+   },
+   {
+    "name": "SCHEME",
+    "description": "Name of the scheme. This parameter is only effective with the following values of the TYPE parameter: \"CREATESNAPSHOTCOPY\", \"CORRECTPROJECTITEMS\""
+   },
+   {
+    "name": "OVERWRITE",
+    "description": "If the imported property placement scheme already exists, this parameter specifies whether it should be overwritten. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"IMPORTPROPERTYPLACEMENTSSCHEMAS\""
+   },
+   {
+    "name": "EXTENDEDMODE",
+    "description": "Enables extended mode while reorganizing the project. Possible values: 0 = No (default), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"REORGANIZE\"."
+   },
+   {
+    "name": "PROJECTSDIRECTORY",
+    "description": "Path to directory which will be scanned. If null or empty then default path \"USER.TrDMProject.Masterdata.Pathnames.Projects\" is used."
+   },
+   {
+    "name": "SCANSUBDIRECTORIES",
+    "description": "Determines whether sub directories are also scanned for projects. Possible values: 0 = No, 1 = Yes (default)."
+   }
+  ]
+ },
+ "renumber": {
+  "name": "renumber",
+  "description": "Action corresponds to numbering functionality.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/renumber.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action. - \"DEVICES\": Renumber devices - \"PAGES\": Renumber pages - \"TERMINALS\": Renumbering terminals - \"CABLES\": Renumbering cables - \"CONNECTIONS\": Renumbering connections"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\"). This parameter is only effective wi"
+   },
+   {
+    "name": "USESELECTION",
+    "description": "If this flag is set, only the objects currently selected in GUI will be renumbered instead of all objects in the project (optional). Possible values: 0 = No (default value), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"PAGES\", \"TERMINALS\", \"CABLES\", \"CONNECTIONS\"."
+   },
+   {
+    "name": "FILTERSCHEME",
+    "description": "Name of the filter scheme (optional). Default value: most recently used filter scheme. If this parameter is not available, then no filtering takes place. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\"."
+   },
+   {
+    "name": "CONFIGSCHEME",
+    "description": "Name of the configuration scheme (optional). If not specified, the last used scheme will be selected again. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"TERMINALS\", \"CABLES\", \"CONNECTIONS\"."
+   },
+   {
+    "name": "STARTVALUE",
+    "description": "Start value (integer, optional, default value: 1). This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"PAGES\", \"TERMINALS\", \"CABLES\"."
+   },
+   {
+    "name": "STEPVALUE",
+    "description": "Increment value. (integer, optional, default value: 1). This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"PAGES\", \"TERMINALS\", \"CABLES\"."
+   },
+   {
+    "name": "POSTNUMERATE",
+    "description": "If this flag is set, only invalid device tags (i.e. those containing \"?\" character) will be renumbered (optional). Possible values: 0 = No, 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"TERMINALS\". The default value of this parameter depends on the value of the TYPE parameter: \"DEVICES\": default value of POSTNUMERATE is 0, \"TERMINALS\": defau"
+   },
+   {
+    "name": "ALSONUMERATEDBYPLC",
+    "description": "If this flag is set, device tags which are influenced by PLC numbering will be numerated (optional). Possible values: 0 = No (default value), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\", \"TERMINALS\"."
+   },
+   {
+    "name": "PERMITSORTCHANGE",
+    "description": "Permit sort change (optional). Possible values: 0 = No (default value), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"TERMINALS\"."
+   },
+   {
+    "name": "FILLGAPS",
+    "description": "Fill Gaps (optional). Possible values: 0 = No (default value), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"TERMINALS\"."
+   },
+   {
+    "name": "IDENTIFIER",
+    "description": "Identifier, e.g. \"X*\" (optional). If used, all devices from the project matching the identifier are taken for renumbering regardless of whether the USESELECTION parameter is used or not. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\"."
+   },
+   {
+    "name": "NUMERATECABLES",
+    "description": "If this flag is set, cables whose device tags contain source and target information are also numerated (optional). Possible values: 0 = No (default value), 1 = Yes. This parameter is only effective with the following values of the TYPE parameter: \"DEVICES\"."
+   },
+   {
+    "name": "STRUCTUREORIENTED",
+    "description": "Set this parameter to true to provide numbering per structure identifier. If false, then pages are continuously numbered without accounting for the structure identifiers. This parameter is only effective with the following values of the TYPE parameter: \"PAGES\"."
+   },
+   {
+    "name": "KEEPINTERVAL",
+    "description": "In combination with the definition of the start page, this parameter retains the increments between the selected pages for the target pages. In this way you can move any desired number of selected pages by a specified increment. Entering the increment size is not possible in this case. This parameter is only effective with the following values of the TYPE parameter: \"PAGES\"."
+   },
+   {
+    "name": "KEEPTEXT",
+    "description": "Set this to 1, if the alphabetic part of the page name should not be overwritten. This parameter is only effective with the following values of the TYPE parameter: \"PAGES\"."
+   },
+   {
+    "name": "SUBPAGES",
+    "description": "Values are: - 0 = Retain: Existing subpages are adopted unchanged into the target page. - 1 = ConsecutiveNumbering: Existing subpages are renumbered using the starting value \"1\" and an increment of \"1\". At every change of the main page, the subpage numbering begins again from \"1\". The subpage numbering follows the project settings defined in the project setting \"Characters for subpages\". - 2 = Con"
+   },
+   {
+    "name": "PREFIX",
+    "description": "Prefix. This parameter is only effective with the following values of the TYPE parameter: \"TERMINALS\"."
+   },
+   {
+    "name": "SUFFIX",
+    "description": "Suffix. This parameter is only effective with the following values of the TYPE parameter: \"TERMINALS\"."
+   },
+   {
+    "name": "SEQUENCE",
+    "description": "Mode to use for numbering. Values are: - 0 = Like sorting: The terminal / pin sorting sequence displayed under terminal strips - (project name) or plugs - (project name) is used. Select this option if you would like to number existing terminals / pins but retain the existing sorting. - 1 = Page oriented - 2 = Cable oriented - 3 = Level oriented This parameter is only effective with the following v"
+   },
+   {
+    "name": "EXTENT",
+    "description": "Parameter to define the scope of numbering. Values are: - 0 = Selected - only the selected terminals or pins will be numbered. - 1 = All selected terminal strips - all terminals of the same strip as selected terminal will be numbered. This parameter is only effective with the following values of the TYPE parameter: \"TERMINALS\"."
+   },
+   {
+    "name": "POTENTIAL_N",
+    "description": "Parameter to determine how N terminals will be treated during numbering. Values are: - 0 = Ignore - 1 = Do not modify, include in sequence. PE, N or SH terminals are not modified during numbering but are taken into account when numbering the other terminals. This means that the designations of the other terminals are assigned as though the PE, N or SH terminals were being included in the numbering"
+   },
+   {
+    "name": "POTENTIAL_PE",
+    "description": "Parameter to determine how PE terminals will be treated during numbering. Values are: - 0 = Ignore - 1 = Do not modify, include in sequence. PE, N or SH terminals are not modified during numbering but are taken into account when numbering the other terminals. This means that the designations of the other terminals are assigned as though the PE, N or SH terminals were being included in the numberin"
+   },
+   {
+    "name": "POTENTIAL_SH",
+    "description": "Parameter to determine how SH terminals will be treated during numbering. Values are: - 0 = Ignore - 1 = Do not modify, include in sequence. PE, N or SH terminals are not modified during numbering but are taken into account when numbering the other terminals. This means that the designations of the other terminals are assigned as though the PE, N or SH terminals were being included in the numberin"
+   },
+   {
+    "name": "MULTIPLETERMINALS",
+    "description": "Also renumber multi path terminals. Values are: - 0 = Don't modify - terminals with the property \"Allow same designations\" are ignored during numbering. - 1 = Number same - terminals with the same designation with the \"Allow same designations\" property are given the same number. - 2 = Number individually - terminals with the \"Allow same designations\" property are each given their own number. There"
+   },
+   {
+    "name": "KEEPALPHA",
+    "description": "Keep alphabetical elements of the terminal number. Values are: - 0 = Don't modify - terminals or pins with alphabetical elements in the designation are ignored during numbering. - 1 = Keep alphabetical elements - the alphabetical elements of the terminal or pin designation are retained. The first numeric elements are renumbered. If the designation only has alphabetical elements, the old designatio"
+   },
+   {
+    "name": "KEEPEXISTING",
+    "description": "Keep existing cable DTs (optional). Possible values: 0 = No (default value), 1 = Yes. - 0 = Renumber all of the cable DTs. - 1 = Renumber only newly generated or copied cables. The DT of the already numbered cables is retained. The cables with \"?\" character in the identifier will be numbered. This parameter is only effective with the following values of the TYPE parameter: \"CABLES\"."
+   },
+   {
+    "name": "KEEPIDENTIFIER",
+    "description": "Keep the identifier (optional). Possible values: 0 = No (default value), 1 = Yes. - 0 = Overwrite the identifiers of the cables with the identifier from the identifier set that is used during numbering. - 1 = Renumber existing cables and only reassign the counters. The identifier of the already numbered cables remains. The character \"?\" at the beginning of the identifier is not retained. This para"
+   },
+   {
+    "name": "STARTVALUE_n",
+    "description": "Start value. Where n is a connection group number (1,2,3...). This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "STEPVALUE_n",
+    "description": "Step value. Where n is a connection group number (1,2,3...). This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "GROUP_n",
+    "description": "Group parameter. Where n is a connection group number (1,2,3...). This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "OVERWRITE",
+    "description": "Overwrite mode. Values are: - 0 = All - always overwrite. - 1 = ExceptManuals - overwrite all except those, which are marked as \"manually set\". - 2 = None - never overwrite. This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "AVOIDIDENTICALDESIGNATIONS",
+    "description": "Values are: - 0 = In entire project - 1 = In the selection - 2 = None - 3 = Per counter reset range (structure/page) This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "VISIBILITY",
+    "description": "Visiblity. Values are: - 0 = All visible - 1 = Do not modify - 2 = Once per page and range This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   },
+   {
+    "name": "MARKASMANUAL",
+    "description": "Mark as \"manually set\". This parameter is only effective with the following values of the TYPE parameter: \"CONNECTIONS\"."
+   }
+  ]
+ },
+ "reports": {
+  "name": "reports",
+  "description": "Action class to update all project evaluations.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/reports.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"PROJECT\": Generate project reports. - \"UPDATEPROJECT\": Update the complete project - \"PAGES\": Update all reports of the same type as given pages. Only the particular report, to which the page belongs, will be updated - \"UPDATEMODELVIEWPAGES\": Update model views on given pages. - \"CREATEMODELVIEWS\": Create model views - \"CREATECOPPERUNFOLDS\": Create co"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used, in case the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be updated (optional). If specified, only the particular report, to which the page belongs, will be updated. This parameter is only effective with the \"PAGES\" and \"UPDATEMODELVIEWPAGES\" values of the TYPE parameter."
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to \"Active\" check box in GUI. These parameters are only effective with the \"PAGES\" and \"UPDATEMODELVIEWPAGES\" values of the TYPE parameter. Default value: 0"
+   },
+   {
+    "name": "PAGEFILTERNAME",
+    "description": "Pages are read from pagefilter with the name pagefiltername. These parameters are only effective with the \"PAGES\" and \"UPDATEMODELVIEWPAGES\" values of the TYPE parameter."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be included in reports update (optional), where n is a number e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc. These parameters are only effective with the \"PAGES\" and \"UPDATEMODELVIEWPAGES\" values of the TYPE parameter."
+   },
+   {
+    "name": "SELn",
+    "description": "Identifier of the pages to be included in report update (optional), where n is a number (e.g. /SEL1:38/4/12/0 (result from StorableObject.ToStringIdentifier())) parameters are only effective with the \"PAGES\" and \"UPDATEMODELVIEWPAGES\" values of the TYPE parameter."
+   },
+   {
+    "name": "TEMPLATEn",
+    "description": "Templates used for generating report pages, where n is a number e.g. /TEMPLATE1:\"Template1\" /TEMPLATE2:\"Template2\" etc. These parameters are only effective with \"CREATEMODELVIEWS\", \"CREATECOPPERUNFOLDS\" and \"CREATEDRILLINGVIEWS\" value of the TYPE parameter."
+   },
+   {
+    "name": "REPLACEEXISTING",
+    "description": "Replaces existing model views, copper unfolds or drilling views when set to 1. This parameter is only effective with \"CREATEMODELVIEWS\", \"CREATECOPPERUNFOLDS\" and \"CREATEDRILLINGVIEWS\" value of the TYPE parameter."
+   }
+  ]
+ },
+ "restore": {
+  "name": "restore",
+  "description": "Action class for restore functions: restore projects and restore master data (forms, symbols, ...)",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/restore.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: \"PROJECT\": Restore project \"MASTERDATA\": Restore master data"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path.This only applies to TYPE value \"PROJECT\"."
+   },
+   {
+    "name": "ARCHIVENAME",
+    "description": "Archive name. Name of the archive to be restored."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory. Path where the projects or data are to be restored. Only applies to TYPE value \"MASTERDATA\"."
+   },
+   {
+    "name": "UNPACKPROJECT",
+    "description": "Specifies whether the previously packed project is to be unpacked (optional, 1 = Yes, 0 = No). Set this flag to 0, only if previously packed projects are to be unpacked, Default value = 0 Only applies to TYPE value \"PROJECT\"."
+   },
+   {
+    "name": "MODE",
+    "description": "If set to 0, project information file (ProjectInfo.xml) will not be restored (optional). Default value = 1 Only applies to TYPE value \"PROJECT\"."
+   }
+  ]
+ },
+ "search": {
+  "name": "search",
+  "description": "Action class for search operations. Searches items in a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/search.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Describes the search area: \"DEVICETAG\": Search for devices \"ALLPROPERTIES\": Search through all properties \"TEXTS\": Text search \"PAGEDATA\": Search through page data \"PROJECTDATA\": Search through project data"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction (see also \"XEsProjectAction\") must be used first, otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "SEARCHITEM",
+    "description": "Text you are searching for."
+   },
+   {
+    "name": "CASESENSITIVE",
+    "description": "Match case (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "WHOLETEXT",
+    "description": "Find whole texts only (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "LOGICPAGES",
+    "description": "Search on logic pages (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "GRAPHICPAGES",
+    "description": "Search on graphical pages (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "EVALUATIONPAGES",
+    "description": "Search on report pages (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "NOTPLACEDFUNCTIONS",
+    "description": "Search in unplaced functions (optional, 1 = Yes, 0 = No). Default value: Most recently used value which is currently set in GUI."
+   },
+   {
+    "name": "FILTERSCHEME",
+    "description": "Function filter scheme (optional). If this parameter is set, only data matching the function filter scheme criteria will be searched. Default value: Use no function filter scheme."
+   },
+   {
+    "name": "SEARCHDB",
+    "description": "Don't use this parameter any more."
+   }
+  ]
+ },
+ "selectionset": {
+  "name": "selectionset",
+  "description": "Action class for selection set functions: get current project, get selected projects, get selected pages.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/selectionset.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: \"PROJECT\": Return current project \"PROJECTS\": Return selected projects \"PAGES\": Return selected pages \"LAYOUTSPACES\": Return selected layout spaces"
+   }
+  ]
+ },
+ "subprojects": {
+  "name": "subprojects",
+  "description": "Action class to export and import subprojects.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/subprojects.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed: \"FILEOFF\": Export subproject action. \"STORE\": Import subproject action."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set. The project has to be opened in exclusive mode. After calling this method, the source project object becomes invalid (in \"FILEOFF\" type)."
+   },
+   {
+    "name": "DESTINATIONPATH",
+    "description": "Target directory (optional). Default value is \"$(MD_PROJECTS)\". Only used by \"FILEOFF\" type."
+   },
+   {
+    "name": "SPNR",
+    "description": "Subproject number."
+   },
+   {
+    "name": "EXTENDONLY",
+    "description": "Extend subproject only (optional). Default value is \"FALSE\". Only used by \"FILEOFF\" type."
+   },
+   {
+    "name": "SUBPROJECTDIR",
+    "description": "Directory where subproject is placed (optional). Default value is taken from alias. Only used by \"STORE\" type."
+   }
+  ]
+ },
+ "synchronize": {
+  "name": "synchronize",
+  "description": "Action class to synchronize project data.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/synchronize.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of synchronization task to be performed: \"MULTILINE\": Multi-line data synchronization. \"SINGLELINE\":Single-line data synchronization. \"OVERVIEW\": Overview data synchronization. \"SYSTEMPARTSTOPROJECT\": Add system parts to your project. \"PARTSTOSYSTEM\": Add parts of the project to the system."
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction must be used first (see also \"ProjectAction\"), otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "STOREMODE",
+    "description": "Specifies whether existing parts are overwritten or only new ones added (optional). 0: Append only new ones (default value). 1: Overwrite existing. 2: Overwrite existing and append new. This parameter is only effective with the following value of the TYPE parameter: \"SYSTEMPARTSTOPROJECT\"."
+   }
+  ]
+ },
+ "translate": {
+  "name": "translate",
+  "description": "Action class for translate functions: translate a project, export missing translation list, and remove languages from a project.",
+  "doc_url": "https://www.eplan.help/en-us/Infoportal/Content/api/2027/translate.html",
+  "params": [
+   {
+    "name": "TYPE",
+    "description": "Type of task to be performed by the action: - \"TRANSLATEPROJECT\": Translate project - \"TRANSLATEPAGES\": Translate given pages - \"REMOVELANGUAGE\": Remove language entry - \"EXPORTMISSINGTRANSLATIONS\": Export missing-word list - \"IMPORTTOTRANSDB\": Import database texts - \"EXPORTFROMTRANSDB\": Export database texts - \"CORRECT\": Corrects translations"
+   },
+   {
+    "name": "PROJECTNAME",
+    "description": "Project name with full path (optional). If not entered, the selected project is used when the action is called from GUI (like from a script or ribbon bar). If called from the windows command line, the PROJECTNAME must be set or the ProjectAction (see also \"XEsProjectAction\") must be used first, otherwise an exception is thrown (see also \"System.ArgumentException\")."
+   },
+   {
+    "name": "IMPORTFILE",
+    "description": "Name of the file with texts to import. Only applies to the parameter TYPE equal to \"IMPORTTOTRANSDB\""
+   },
+   {
+    "name": "EXPORTFILE",
+    "description": "Name of file containing exported missing word list. This parameter is only effective with the TYPE equal to \"EXPORTMISSINGTRANSLATIONS\" or \"EXPORTFROMTRANSDB\""
+   },
+   {
+    "name": "CONVERTER",
+    "description": "Name of converter (optional). This name is used as the input and output format. Default values:\"XTrLanguageDbXmlConverterImpl\" (Native format XML) for TYPE equal to \"EXPORTFROMTRANSDB\", XTrLanguageDbXml2TabConverterImpl for \"IMPORTTOTRANSDB\" and \"EXPORTMISSINGTRANSLATIONS\" This parameter is only effective with the TYPE equal to \"EXPORTMISSINGTRANSLATIONS\", \"IMPORTTOTRANSDB\" or \"EXPORTFROMTRANSDB\""
+   },
+   {
+    "name": "LANGUAGE",
+    "description": "Translation language, e.g., \"fr_FR\""
+   },
+   {
+    "name": "USEPAGEFILTER",
+    "description": "Determines if only filtered pages should be used or all project pages (optional). It corresponds to \"Active\" check box in GUI. These parameters are only effective with the \"TRANSLATEPAGES\" value of the TYPE parameter. Default value: 0"
+   },
+   {
+    "name": "PAGFILTERNAME",
+    "description": "Pages are read from pagefilter with the name pagefiltername.These parameters are only effective with the \"TRANSLATEPAGES\" value of the TYPE parameter."
+   },
+   {
+    "name": "PAGENAME",
+    "description": "Name of the page to be translated (optional)."
+   },
+   {
+    "name": "PAGENAMEn",
+    "description": "Names of the pages to be translated (optional), where n is a number e.g. /PAGENAME1:=AP+ST1/2 /PAGENAME2:=AP+ST1/4 /PAGENAME3:=AP+ST1/7 etc. These parameters are only effective with the \"TRANSLATEPAGES\" value of the TYPE parameter."
+   },
+   {
+    "name": "SELn",
+    "description": "Identifier of the pages to be translated (optional), where n is a number (e.g. /SEL1:38/4/12/0 (result from StorableObject.ToStringIdentifier())) parameters are only effective with the \"TRANSLATEPAGES\" value of the TYPE parameter."
+   },
+   {
+    "name": "CONVERTTRANSLATEDTEXTS",
+    "description": "Determines if already translated texts should be also converted. Default value: 0. This parameter is only effective with the TYPE equal to \"CORRECT\"."
+   }
+  ]
+ }
+}

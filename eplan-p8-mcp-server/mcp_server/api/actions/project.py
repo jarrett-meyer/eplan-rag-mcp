@@ -446,3 +446,107 @@ def switch_project_type(
         PROJECTTYPE=project_type
     )
     return manager.execute_action(action)
+
+
+def run_project_action(
+    project_name: str,
+    action: str,
+    action_args: str = None,
+    no_close: bool = None,
+    open_mode: str = None,
+    enable_dialogs: str = None
+) -> dict:
+    """
+    Meta-action: open a project, run another action against it, then close the
+    project again unless NOCLOSE is set.
+    Action: ProjectAction
+
+    This is the wrapper to reach for when an action needs a project that is not
+    currently open, or when running EPLAN from the command line where most
+    actions raise System.ArgumentException without a project context.
+
+    The nested action's own parameters are passed FLAT on the same command line,
+    after /Action - they are not nested inside the /Action value. So pass the
+    bare nested action name in `action` and its parameters as a raw
+    "/KEY:value /KEY:value" tail in `action_args`, e.g.
+
+        run_project_action(
+            project_name="C:/Projects/Demo.elk",
+            action="export",
+            action_args='/TYPE:PDFPROJECT /EXPORTFILE:"C:/out/demo.pdf"'
+        )
+
+    which becomes:
+        ProjectAction /PROJECTNAME:"C:/Projects/Demo.elk" /Action:export
+                      /TYPE:PDFPROJECT /EXPORTFILE:"C:/out/demo.pdf"
+
+    Note the mixed parameter casing of this action: PROJECTNAME and NOCLOSE are
+    upper case while Action, OpenMode and EnableDialogs are mixed case. EPLAN is
+    not consistent here and the casing is passed through verbatim.
+
+    Args:
+        project_name: Project name with full path
+        action: Name of the action to execute against the project (bare name only)
+        action_args: Raw parameter tail for the nested action, appended verbatim
+                     as "/KEY:value ..." . Quote values containing spaces yourself.
+        no_close: False/None = project is closed afterwards (EPLAN default),
+                  True = project stays open after the nested action
+        open_mode: "Standard", "ReadOnly" or "Exclusive"
+        enable_dialogs: Pass the string "TRUE" to run the nested action WITHOUT
+                        quiet mode. Leave None for unattended runs - this server
+                        forces QuietMode on every action precisely so no modal
+                        dialog can block, and "TRUE" gives that up: a dialog will
+                        hang the call until someone dismisses it by hand.
+    """
+    manager, error = _get_connected_manager()
+    if error:
+        return error
+
+    command = _build_action(
+        "ProjectAction",
+        PROJECTNAME=project_name,
+        Action=action,
+        NOCLOSE=no_close,
+        OpenMode=open_mode,
+        EnableDialogs=enable_dialogs
+    )
+    if action_args:
+        command = command + " " + action_args.strip()
+    return manager.execute_action(command)
+
+
+def convert_base_projects(
+    project_template: str = None,
+    folder: str = None,
+    file_types: str = None
+) -> dict:
+    """
+    Convert one or more old basic projects (*.ept / *.epb) to the new *.zw9
+    basic project format. Every basic project below the given folder is
+    converted recursively.
+    Action: XPrjConvertBaseProjectsAction
+
+    WARNING - THIS WRITES TO DISK. The action creates converted project files
+    inside the given folder tree. Point it at a scratch copy of the basic
+    projects, never at production master data (for example the company template
+    share): run it against a temp clone, verify the result, then promote.
+
+    Args:
+        project_template: Full *.ept or *.epb file name of a single old basic
+                          project to convert
+        folder: Folder whose basic projects (including subfolders) are all
+                converted to *.zw9. Use a scratch copy.
+        file_types: File types to convert, e.g. "*.*" for all old basic project
+                    formats (*.ept and *.epb)
+    """
+    manager, error = _get_connected_manager()
+    if error:
+        return error
+
+    action = _build_action(
+        "XPrjConvertBaseProjectsAction",
+        ProjectTemplate=project_template,
+        Folder=folder,
+        FileTypes=file_types
+    )
+    return manager.execute_action(action)

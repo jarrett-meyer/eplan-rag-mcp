@@ -42,15 +42,44 @@ def _get_connected_manager():
 
 
 def _build_action(action_name: str, **params) -> str:
-    """Build an action string with parameters."""
+    """
+    Build an action string with parameters.
+
+    Values are quoted when they contain whitespace. A value that already looks
+    like a well-formed quoted token is left alone so callers can pre-quote.
+
+    A double quote anywhere else in a value is REJECTED rather than passed
+    through. EPLAN re-parses this command string with
+    /([a-zA-Z0-9_]+):("([^"]*)"|([^\\s]*)), so a stray quote lets a value close
+    its own token and inject further /PARAM pairs - e.g. a project_name of
+    '"x" /EXPORTFILE:C:/evil.pdf' would smuggle in an EXPORTFILE parameter.
+    That silently defeats the registry allowlist in catalog.action_run(), which
+    is documented as the validated alternative to execute_raw_action. Since no
+    EPLAN parameter value legitimately contains a double quote, refusing is
+    both safe and lossless.
+
+    Raises:
+        ValueError: if a string value contains an unbalanced double quote.
+            Callers reach this through the MCP tool wrapper, which turns it
+            into {"success": False, "error": ...} rather than a traceback.
+    """
     parts = [action_name]
     for key, value in params.items():
         if value is not None and value != "":
             if isinstance(value, bool):
                 value = "1" if value else "0"
-            # Quote strings with spaces
-            if isinstance(value, str) and " " in value and not value.startswith('"'):
-                value = f'"{value}"'
+            if isinstance(value, str):
+                quoted = (len(value) >= 2 and value.startswith('"')
+                          and value.endswith('"') and '"' not in value[1:-1])
+                if not quoted:
+                    if '"' in value:
+                        raise ValueError(
+                            f'Refusing to build action {action_name!r}: value for '
+                            f'/{key} contains a double quote, which would let it '
+                            f'inject additional parameters. Value: {value!r}'
+                        )
+                    if any(c.isspace() for c in value):
+                        value = f'"{value}"'
             parts.append(f"/{key}:{value}")
     return " ".join(parts)
 
