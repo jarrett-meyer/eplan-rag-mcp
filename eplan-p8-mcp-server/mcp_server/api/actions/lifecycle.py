@@ -26,6 +26,7 @@ import time
 
 from ._base import _get_connected_manager, _quote_param
 from eplan_connection import (
+    call_with_timeout,
     get_manager,
     detect_installed_versions,
     eplan_pids as _eplan_pids,
@@ -195,7 +196,8 @@ def app_launch(version: str = None, variant: str = None, headless: bool = False,
     return result
 
 
-def app_shutdown(force: bool = False, wait_seconds: int = 60) -> dict:
+def app_shutdown(force: bool = False, wait_seconds: int = 60,
+                 stop_timeout_seconds: int = 30) -> dict:
     """
     Stop the connected EPLAN instance via Remote Client StopEplan().
 
@@ -209,6 +211,13 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60) -> dict:
             wait_seconds, kill EPLAN.exe with taskkill as a last resort.
             Default False - never kills.
         wait_seconds: How long to wait for the process to exit (default 60).
+        stop_timeout_seconds: How long to give StopEplan() itself before
+            giving up on it and moving on to the process wait (default 30).
+            StopEplan is an unbounded synchronous CLR call: when a human has
+            EPLAN mid-edit it simply never returns, and without this bound it
+            takes the whole MCP server down with it - every other tool queues
+            behind the wedged call and the session can only be recovered by
+            restarting the server. Measured 2026-09-11: an 8m44s hang.
     """
     manager, error = _get_connected_manager()
     if error:
@@ -217,10 +226,21 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60) -> dict:
     pids_before = _eplan_pids()
     stop_ok = False
     stop_error = None
-    try:
-        stop_ok = bool(manager.client.StopEplan())
-    except Exception as e:
-        stop_error = str(e)
+    stop_timed_out = False
+
+    # Bounded - see stop_timeout_seconds. A timeout here is NOT fatal: EPLAN
+    # often acts on the request and exits anyway, so the process wait below
+    # still decides success.
+    value, stop_timed_out, exc = call_with_timeout(
+        manager.client.StopEplan, stop_timeout_seconds)
+    if stop_timed_out:
+        stop_error = (f"StopEplan() did not return within {stop_timeout_seconds}s - "
+                      "EPLAN is not servicing remoting calls. It is usually a human "
+                      "with an edit or a dialog open.")
+    elif exc is not None:
+        stop_error = str(exc)
+    else:
+        stop_ok = bool(value)
 
     # The remote client is stale either way - drop the connection state.
     try:
@@ -257,9 +277,14 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60) -> dict:
     }
     if stop_error:
         result["stop_eplan_error"] = stop_error
+    if stop_timed_out:
+        result["stop_eplan_timed_out"] = True
     if remaining:
         result["error"] = (f"EPLAN process(es) still running after {wait_seconds}s: "
                            f"{remaining}. Retry with force=True to kill them.")
+        if stop_timed_out:
+            result["error"] += (" StopEplan() also timed out, which usually means "
+                                "somebody is working in EPLAN - check before forcing.")
     return result
 
 
