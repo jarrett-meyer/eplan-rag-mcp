@@ -39,19 +39,20 @@ Use one of these whenever you are unsure of an exact action name or parameter �
 
 ## 2. The local `eplan` action server
 
-It exposes **217 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
+It exposes **220 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
 
 - **8 connection/utility tools**: `eplan_versions`, `eplan_servers`,
   `eplan_connect`, `eplan_status`, `eplan_ping`, `eplan_test`,
   `eplan_disconnect`, `eplan_list_extensions`.
-- **200 EPLAN action tools** → `eplan_<action>` (e.g. `eplan_open_project`).
+- **203 EPLAN action tools** → `eplan_<action>` (e.g. `eplan_open_project`).
   Includes 5 discovery tools (`eplan_settings_list_children`,
   `eplan_list_schemes`, `eplan_list_report_templates`, `eplan_list_layers`,
   `eplan_list_enums`) that enumerate real EPLAN catalogs instead of guessing,
-  5 live-DataModel tools (`eplan_live_query_functions`,
+  7 live-DataModel tools (`eplan_live_query_functions`,
   `eplan_live_query_pages`, `eplan_live_set_function_text`,
   `eplan_live_set_connection_designations`,
-  `eplan_live_read_check_messages`) that read/edit the open project's
+  `eplan_live_read_check_messages`, `eplan_live_scale_text`,
+  `eplan_live_set_layer`) that read/edit the open project's
   object model via runtime reflection (see §4 below) - the last of these reaches
   a different namespace still (`Eplan.EplApi.EServices.PrjMessagesCollection`,
   the itemized "Message management" results a check run produces, which
@@ -65,7 +66,7 @@ It exposes **217 tools** (full tool-by-tool reference: [the project wiki](https:
   writing against this API means looking members up constantly, and the
   alternative was a hand-written throwaway script per question. Deliberately
   2 tools and not a wrapper per class - same call as the action catalog
-  below, for the same reason. 11 schematic-authoring
+  below, for the same reason. 12 schematic-authoring
   tools on that same reflection scaffold (`eplan_live_symbol_catalog`,
   `eplan_live_create_page`, `eplan_live_place_symbol`,
   `eplan_live_connect_pins`, `eplan_live_read_page`,
@@ -79,7 +80,15 @@ It exposes **217 tools** (full tool-by-tool reference: [the project wiki](https:
   because it would MERGE devices) and `eplan_live_read_connections` (the LOGICAL
   connections - what is actually wired to what, as opposed to where a line was
   drawn; read-only, and it reports when connections look ungenerated rather than
-  letting an empty list read as "nothing is wired") and
+  letting an empty list read as "nothing is wired"; `device=` scopes it to one
+  device or terminal strip, and it reports `CONNECTION_TYPE`, where 5 is
+  "Jumper (automatic)" - `kindOfWire` cannot tell you that, its five members are
+  IndividualConnection/Cable/Conduit/PhaseBusbar/Line) and
+  `eplan_live_read_terminals` (a terminal strip's terminals with every
+  jumper-bearing property EPLAN keeps on them - the saddle jumper option
+  #20808, the manual jumper crests, the switching jumpers, and the sort
+  code/level that order a strip; these live on the TERMINAL, not on the
+  connection, so no amount of connection reading reaches them) and
   `eplan_live_connect_pins_routed` (a drawn line through a right-angled corner,
   for the diagonal case where devices share neither axis - NOT the way to wire a
   straight run, which needs no object at all) and the connection-symbol tools
@@ -227,7 +236,14 @@ All of these exist as `eplan_*` tools:
   management" results of the last check run — `Eplan.EplApi.EServices.
   PrjMessagesCollection` — by 1-based index, matching the order EPLAN's own
   dialog lists them in; `eplan_get_system_messages` only ever sees the two
-  summary lines a check run appends, never the individual entries).
+  summary lines a check run appends, never the individual entries),
+  `eplan_live_scale_text` (multiply every text height in the GED selection or on
+  a named page by a factor — dry-run by default, skips the `-16002` "from layer"
+  sentinel and texts shared with a symbol variant, reverses with `1/factor`),
+  `eplan_live_set_layer` (move the selection or a page onto one layer - default
+  `EPLAN100` - and hand colour/line width back to that layer via the same
+  `-16002` sentinel; dry-run by default, reports the layers the objects came
+  from).
   These reach `Eplan.EplApi.DataModel`/`HEServices`/`EServices` types via
   `AppDomain.CurrentDomain.GetAssemblies()` + `Assembly.Load` fallback instead
   of a static `using`, because that `using` doesn't compile in EPLAN's script
@@ -270,7 +286,7 @@ All of these exist as `eplan_*` tools:
 - **EPLAN settings at runtime:** via `eplan_set_setting` /
   `eplan_set_project_setting` (action params `set`/`value`/`index`) or the
   typed `eplan_settings_set_*` scripted tools.
-- **The MCP registration itself:** `claude mcp add eplan -- python .../server.py`.
+- **The MCP registration itself:** `python eplan-p8-mcp-server/install.py` (own `.venv`, registers `eplan`).
 
 ---
 

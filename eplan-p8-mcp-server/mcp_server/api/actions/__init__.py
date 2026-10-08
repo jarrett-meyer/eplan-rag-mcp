@@ -338,6 +338,12 @@ from .live import (
     live_read_check_messages,
 )
 
+# Graphic text formatting on the live object model (proportional text rescale)
+from .graphics import (
+    live_scale_text,
+    live_set_layer,
+)
+
 # Schematic authoring - the WRITE side of the live object model: create pages,
 # place devices at coordinates, wire them, read the result back. Rides the same
 # reflection scaffold as live.py. Writes are scratch-only unless the caller
@@ -352,6 +358,7 @@ from .schematic import (
     live_verify_page,
     live_set_device_tag,
     live_read_connections,
+    live_read_terminals,
     live_connect_pins_routed,
     live_routing_catalog,
     live_place_connection_symbol,
@@ -493,9 +500,11 @@ __all__ = [
     # Live DataModel
     'live_query_functions', 'live_query_pages', 'live_set_function_text',
     'live_set_connection_designations', 'live_read_check_messages',
+    'live_scale_text', 'live_set_layer',
     'live_symbol_catalog', 'live_create_page', 'live_place_symbol',
     'live_connect_pins', 'live_read_page', 'live_remove_placement',
     'live_verify_page', 'live_set_device_tag', 'live_read_connections',
+    'live_read_terminals',
     'live_connect_pins_routed', 'live_routing_catalog', 'live_place_connection_symbol',
     'live_place_corner', 'live_place_tnode', 'live_place_connected',
     # GED interaction

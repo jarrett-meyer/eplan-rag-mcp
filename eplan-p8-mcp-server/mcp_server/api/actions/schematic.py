@@ -1741,6 +1741,264 @@ _HELPERS_CONNECTIONS = r'''
         return d;
     }
 
+    // An EPLAN property whose value is a NUMBER, read as a number.
+    //
+    // The string path in DumpConnection (SafeText + "drop it if the text is
+    // empty") is right for designations and wire numbers, where empty means
+    // absent. It is WRONG for these: CONNECTION_TYPE 0 is "Placed" and
+    // FUNC_TERMINAL_JUMPERBAR 0 is "Automatic" - a legitimate answer, and for
+    // the jumper work the answer we are specifically looking for. Reading them
+    // as text risks erasing the difference between "the value is 0" and "the
+    // property is not there", which is the whole question.
+    //
+    // Absence is recorded rather than omitted, for the same reason.
+    static object ReadIntProp(object props, string name, Dictionary<string, object> into,
+                              string key, List<string> absent)
+    {
+        PropertyInfo pi = GetPropInfo(props.GetType(), name);
+        if (pi == null)
+        {
+            if (absent != null) absent.Add(name);
+            return null;
+        }
+
+        object v;
+        try { v = pi.GetValue(props, null); }
+        catch (Exception ex)
+        {
+            // An EMPTY property throws on READ (EmptyPropertyException). That is
+            // "not set", a real answer, not a failure - measured live 2026-09-09
+            // on FUNC_TERMINAL_SWITCHABLE_JUMPER_EXTERN #20292, which threw
+            // rather than returning 0 on a strip with no switching jumpers.
+            into[key] = null;
+            if (absent != null) absent.Add(name + " (empty or threw: " + Flatten(ex) + ")");
+            return null;
+        }
+        if (v == null) { into[key] = null; return null; }
+
+        // Convert.ToInt64 ALONE IS WRONG and this is measured, not theoretical:
+        // an EPLAN PropertyValue does not implement IConvertible, so
+        // Convert.ToInt64 throws
+        //   InvalidCastException: Unable to cast object of type
+        //   'Eplan.EplApi.DataModel.PropertyValue' to type 'System.IConvertible'
+        // for EVERY integer property. Measured live 2026-09-09: it failed on
+        // CONNECTION_TYPE across all 3082 connections of a real project and on
+        // FUNC_TERMINALLEVEL / FUNC_TERMINAL_JUMPERBAR on all 32 terminals of a
+        // strip. PropertyValue converts through implicit operators, which
+        // reflection does not apply - so parse its text instead. The same run
+        // confirmed the text path returns the right values (level 1/2,
+        // jumperBar 0).
+        try
+        {
+            long direct = Convert.ToInt64(v);
+            into[key] = direct;
+            return direct;
+        }
+        catch (Exception) { }
+
+        string s;
+        try { s = v.ToString(); }
+        catch (Exception ex)
+        {
+            into[key] = null;
+            if (absent != null) absent.Add(name + " (empty or threw: " + Flatten(ex) + ")");
+            return null;
+        }
+        if (s == null || s.Length == 0) { into[key] = null; return null; }
+
+        long n;
+        if (long.TryParse(s.Trim(), System.Globalization.NumberStyles.Integer,
+                          System.Globalization.CultureInfo.InvariantCulture, out n))
+        {
+            into[key] = n;
+            return n;
+        }
+
+        // Readable but not a number. Report the text rather than discard it -
+        // silently dropping it would look identical to the property being absent.
+        into[key] = s;
+        if (absent != null) absent.Add(name + " (not an integer: " + s + ")");
+        return null;
+    }
+
+    // An INDEXED property - the jumper crests are indexed 1..1. TryRead cannot
+    // read these: it calls GetValue(o, null), which throws
+    // TargetParameterCountException on an indexed getter, so the value would be
+    // reported as "threw" rather than read. GetPropInfoIdx resolves the
+    // int-indexed overload specifically.
+    //
+    // An EMPTY property throws EmptyPropertyException on read. For a jumper
+    // crest that means "no manual saddle jumper starts here" - the EXPECTED
+    // result on a strip left on Automatic - so it is reported as null plus a
+    // note, never as a failure.
+    static void ReadIndexedProp(object props, string name, int index,
+                                Dictionary<string, object> into, string key,
+                                List<string> absent)
+    {
+        PropertyInfo pi = GetPropInfoIdx(props.GetType(), name);
+        if (pi == null)
+        {
+            if (absent != null) absent.Add(name + "[" + index + "]");
+            return;
+        }
+        try
+        {
+            object v = pi.GetValue(props, new object[] { index });
+            string s = SafeText(v);
+            into[key] = (s != null && s.Length > 0) ? (object)s : null;
+        }
+        catch (Exception ex)
+        {
+            into[key] = null;
+            if (absent != null)
+                absent.Add(name + "[" + index + "] (empty or threw: " + Flatten(ex) + ")");
+        }
+    }
+
+    // CONNECTION_TYPE #31075 "Type of administration". Decoded here so a caller
+    // reading the JSON does not need the enum table to recognise a jumper.
+    static string ConnectionTypeName(long v)
+    {
+        switch (v)
+        {
+            case 0: return "Placed";
+            case 1: return "Unplaced";
+            case 2: return "Net-based";
+            case 3: return "Direct (automatic)";
+            case 4: return "Multi-line (automatic)";
+            case 5: return "Jumper (automatic)";
+            case 6: return "Routed";
+            case 7: return "Not routed";
+            default: return "unknown(" + v + ")";
+        }
+    }
+
+    // FUNC_TERMINAL_JUMPERBAR #20808 "Saddle jumper option".
+    static string JumperBarName(long v)
+    {
+        switch (v)
+        {
+            case 0: return "Automatic";
+            case 1: return "Manual, start of jumper";
+            case 2: return "Manual, center of jumper";
+            case 3: return "Manual, end of jumper";
+            case 4: return "No automatic jumper";
+            case 5: return "Automatic, start of jumper";
+            case 6: return "Automatic, end of jumper";
+            default: return "unknown(" + v + ")";
+        }
+    }
+
+    // FUNC_TERMINAL_SWITCHABLE_JUMPER_INTERN #20291 / _EXTERN #20292. "Closed"
+    // is the one that matters: per the API reference, selecting it CREATES a
+    // switching jumper connection to the next terminal, so it is a second
+    // mechanism that produces jumper connections besides a saddle-jumper crest.
+    static string SwitchableJumperName(long v)
+    {
+        switch (v)
+        {
+            case 0: return "None";
+            case 1: return "Open";
+            case 2: return "Closed";
+            default: return "unknown(" + v + ")";
+        }
+    }
+
+    // Does either end of this connection land on a device whose name contains
+    // the filter text? Case-insensitive substring, so "+P01-XT" catches every
+    // terminal of that strip. Applied BEFORE DumpConnection so a whole-project
+    // walk does not pay to serialise thousands of connections it will discard.
+    static bool ConnTouchesDevice(object conn, string contains)
+    {
+        if (string.IsNullOrEmpty(contains)) return true;
+        for (int i = 0; i < 2; i++)
+        {
+            object sr = TryRead(conn, i == 0 ? "StartSymbolReference" : "EndSymbolReference", null);
+            if (sr == null) continue;
+            if (Matches(SafeText(TryRead(sr, "Name", null)), contains)) return true;
+        }
+        return false;
+    }
+
+    // One terminal of a terminal strip, with everything that decides how a
+    // jumper gets drawn: where it sits in the strip (sort code + level, NOT
+    // page position), and every jumper-bearing property EPLAN keeps on it.
+    static Dictionary<string, object> DumpTerminal(object term)
+    {
+        Dictionary<string, object> d = new Dictionary<string, object>();
+        List<string> absent = new List<string>();
+
+        d["handle"] = Handle(term);
+        d["clrType"] = term.GetType().Name;
+
+        object nm = TryRead(term, "Name", absent);
+        if (nm != null) d["device"] = SafeText(nm);
+
+        object pg = TryRead(term, "Page", absent);
+        if (pg != null) d["page"] = PropText(pg, "Name");
+
+        // Page-space insertion point - the anchor a jumper dot is offset from.
+        object loc = TryRead(term, "Location", null);
+        if (loc != null) d["location"] = PtDict(loc);
+
+        object main = TryRead(term, "IsMainTerminal", null);
+        if (main != null)
+        {
+            try { d["isMainTerminal"] = Convert.ToBoolean(main); }
+            catch (Exception) { d["isMainTerminal"] = SafeText(main); }
+        }
+
+        object props = TryRead(term, "Properties", absent);
+        if (props != null)
+        {
+            // Position within the strip. FUNC_TERMINALSORTCODE is a STRING and
+            // may be empty - EPLAN then falls back to designation order.
+            foreach (string p in new string[] {
+                "FUNC_TERMINALSORTCODE", "FUNC_TERMINALDEVICEPOSITION" })
+            {
+                object v = TryRead(props, p, null);
+                string s = SafeText(v);
+                if (s != null && s.Length > 0) d[p] = s;
+            }
+
+            ReadIntProp(props, "FUNC_TERMINALLEVEL", d, "level", absent);
+
+            // Saddle jumper option. 0 = Automatic is the default and the value
+            // we most expect; 5/6 would mean EPLAN has recorded automatic
+            // start/end roles, which would hand us the chain endpoints.
+            object jb = ReadIntProp(props, "FUNC_TERMINAL_JUMPERBAR", d, "jumperBar", absent);
+            if (jb != null) d["jumperBarName"] = JumperBarName(Convert.ToInt64(jb));
+
+            // Switching jumpers. "Closed" creates a connection to the NEXT
+            // terminal, which is a chain by construction.
+            object sje = ReadIntProp(props, "FUNC_TERMINAL_SWITCHABLE_JUMPER_EXTERN",
+                                     d, "switchableJumperExtern", absent);
+            if (sje != null)
+                d["switchableJumperExternName"] = SwitchableJumperName(Convert.ToInt64(sje));
+            object sji = ReadIntProp(props, "FUNC_TERMINAL_SWITCHABLE_JUMPER_INTERN",
+                                     d, "switchableJumperIntern", absent);
+            if (sji != null)
+                d["switchableJumperInternName"] = SwitchableJumperName(Convert.ToInt64(sji));
+
+            // How many saddle jumpers this connection point permits at all - a
+            // terminal allowing zero must never be given a jumper dot.
+            ReadIntProp(props, "FUNC_LOGDEF_SADDLEJUMPERCOUNT", d, "saddleJumpersAllowed", absent);
+
+            // The manual saddle-jumper crest, e.g. "2/0;1/-1" = jumper to the
+            // terminal two away on the same level, then one further terminal
+            // one level lower. Indexed 1..1, and EMPTY unless someone set a
+            // MANUAL jumper - so null here is the expected reading on a strip
+            // left on Automatic, not a failure.
+            ReadIndexedProp(props, "FUNC_TERMINAL_JUMPER_EXTERN", 1, d,
+                            "manualJumperCrestExtern", absent);
+            ReadIndexedProp(props, "FUNC_TERMINAL_JUMPER_INTERN", 1, d,
+                            "manualJumperCrestIntern", absent);
+        }
+
+        if (absent.Count > 0) d["absentMembers"] = absent;
+        return d;
+    }
+
     static Dictionary<string, object> DumpConnection(object conn)
     {
         Dictionary<string, object> d = new Dictionary<string, object>();
@@ -1778,6 +2036,18 @@ _HELPERS_CONNECTIONS = r'''
                 string s = SafeText(v);
                 if (s != null && s.Length > 0) d[p] = s;
             }
+
+            // The jumper discriminator. CONNECTION_TYPE 5 is "Jumper
+            // (automatic)"; KindOfWire above CANNOT answer this - its five
+            // members are IndividualConnection/Cable/Conduit/PhaseBusbar/Line
+            // with no jumper among them, so it is the cable axis, not this one.
+            object ct = ReadIntProp(props, "CONNECTION_TYPE", d, "connectionType", absent);
+            if (ct != null) d["connectionTypeName"] = ConnectionTypeName(Convert.ToInt64(ct));
+
+            // Which of up to five saddle-jumper slots this connection occupies.
+            // On the default "Automatic" only two are managed, chosen by the
+            // terminal connection point's internal/external setting.
+            ReadIntProp(props, "CONNECTION_SADDLEJUMPER_SLOT", d, "saddleJumperSlot", absent);
         }
 
         if (absent.Count > 0) d["absentMembers"] = absent;
@@ -1786,7 +2056,7 @@ _HELPERS_CONNECTIONS = r'''
 '''
 
 
-def live_read_connections(page: str = None, limit: int = 200,
+def live_read_connections(page: str = None, device: str = None, limit: int = 200,
                           timeout_seconds: float = 120.0) -> dict:
     """
     Read the project's LOGICAL connections - what is actually wired to what.
@@ -1808,17 +2078,39 @@ def live_read_connections(page: str = None, limit: int = 200,
 
     Args:
         page: Only connections on this page. Omit for the whole project.
+        device: Only connections with at least one end on a device whose tag
+            CONTAINS this text (case-insensitive). Use it to scope to one
+            terminal strip - "+P01-XT" matches every terminal of that strip.
+            A real project has thousands of connections, so an unscoped read is
+            almost always truncated.
         limit: Max connections returned (default 200). The true total is always
             reported, so a truncated read is never mistaken for the whole set.
         timeout_seconds: Default 120s - a project-wide walk is not fast.
 
     Returns:
-        {"success", "connections": [...], "total", "returned", "truncated",
-         "page"}
+        {"success", "connections": [...], "total", "matched", "returned",
+         "truncated", "page", "device"}
 
         Each connection: {"handle", "page", "kindOfWire", "isPlaced",
         "from": {...}, "to": {...}} where each end carries "device" (the device
-        tag), "designation" (the connection point), "pinIndex" and "location".
+        tag), "clrType" ("Terminal" vs "Function", so a terminal end is
+        identifiable without reading a property), "designation" (the connection
+        point), "pinIndex" and "location" (page-space).
+
+        Jumper-relevant fields, when the connection carries them:
+
+          connectionType / connectionTypeName
+              CONNECTION_TYPE #31075. 5 = "Jumper (automatic)" is how EPLAN
+              marks a jumper, and it is what the terminal strip editor renders.
+              NOTE kindOfWire cannot answer this: its members are
+              IndividualConnection/Cable/Conduit/PhaseBusbar/Line, with no
+              jumper among them - it is the cable axis, not this one.
+          saddleJumperSlot
+              CONNECTION_SADDLEJUMPER_SLOT #31163, 1..5.
+
+        A property that is absent, or that threw on read, is listed in
+        "absentMembers" rather than quietly omitted - so "no jumper properties
+        here" stays distinguishable from "this build cannot read them".
 
         When the project has NO connections at all, "stale" is true and
         "nextStep" names eplan_generate_connections - because zero connections
@@ -1828,6 +2120,7 @@ def live_read_connections(page: str = None, limit: int = 200,
     try:
         limit = cs_int(limit, "limit", minimum=1, maximum=5000)
         page_cs = cs_escape(cs_text(page, "page")) if page else None
+        device_cs = cs_escape(cs_text(device, "device")) if device else None
     except SchematicValueError as exc:
         return _err(exc)
 
@@ -1837,6 +2130,11 @@ def live_read_connections(page: str = None, limit: int = 200,
                 object cpg = TryRead(conn, "Page", null);
                 string cpgName = cpg == null ? null : PropText(cpg, "Name");
                 if (cpgName != PAGENAME) continue;'''
+
+    device_filter = ""
+    if device_cs:
+        device_filter = '''
+                if (!ConnTouchesDevice(conn, DEVICENAME)) continue;'''
 
     body = '''            Type finderType = FindType("Eplan.EplApi.DataModel.DMObjectsFinder");
             object finder = Activator.CreateInstance(finderType, new object[] { project });
@@ -1857,7 +2155,7 @@ def live_read_connections(page: str = None, limit: int = 200,
             foreach (object conn in found)
             {
                 if (conn == null) continue;
-                total++;''' + page_filter + '''
+                total++;''' + page_filter + device_filter + '''
                 matched++;
                 if (items.Count < LIMIT) items.Add(DumpConnection(conn));
             }
@@ -1870,6 +2168,8 @@ def live_read_connections(page: str = None, limit: int = 200,
     subs = {"LIMIT": str(limit)}
     if page_cs:
         subs["PAGENAME"] = '"%s"' % page_cs
+    if device_cs:
+        subs["DEVICENAME"] = '"%s"' % device_cs
     body = _fill(body, **subs)
 
     out = _shape(_execute_script(
@@ -1880,6 +2180,8 @@ def live_read_connections(page: str = None, limit: int = 200,
     if out.get("success"):
         if page:
             out["page"] = page
+        if device:
+            out["device"] = device
         if not out.get("total"):
             # Zero connections almost always means they have not been generated,
             # not that nothing is wired. Say which, rather than letting the
@@ -1899,6 +2201,165 @@ def live_read_connections(page: str = None, limit: int = 200,
                 "page may genuinely have no wiring, or connections may predate "
                 "the lines drawn on it - regenerate if in doubt."
                 % (out.get("total", 0), page)
+            )
+    return out
+
+
+# ---------------------------------------------------------------------------
+# 9b. Read terminals, and the jumper properties EPLAN keeps on them
+# ---------------------------------------------------------------------------
+
+def live_read_terminals(device: str = None, page: str = None, limit: int = 200,
+                        timeout_seconds: float = 120.0) -> dict:
+    """
+    Read a terminal strip's terminals and every jumper-bearing property on them.
+
+    This exists because the jumpers you can SEE in EPLAN's terminal strip editor
+    are not reachable any other way through this server. The editor is not a
+    separate data source - it renders connections plus these terminal
+    properties - and neither live_read_connections nor a generic function walk
+    could reach them:
+
+      - live_read_connections reports kindOfWire, whose five members are
+        IndividualConnection/Cable/Conduit/PhaseBusbar/Line. There is no jumper
+        among them; it is the cable axis. (It now also reports CONNECTION_TYPE,
+        which IS the jumper discriminator - see that tool.)
+      - FUNC_TERMINAL_JUMPERBAR and the jumper crests live on the TERMINAL, not
+        on the connection, so no amount of connection reading finds them.
+
+    READ-ONLY. Nothing here writes, and it deliberately does not touch the
+    jumper properties: writing a crest would flip a strip from Automatic to
+    Manual and change how EPLAN's own terminal diagrams render it.
+
+    Args:
+        device: Only terminals whose tag CONTAINS this text (case-insensitive).
+            "+P01-XT" matches every terminal of that strip. Omit for all
+            terminals in the project, which on a real project is a lot.
+        page: Only terminals placed on this page. Omit for any page.
+        limit: Max terminals returned (default 200). The true total and the
+            matched count are always reported.
+        timeout_seconds: Default 120s - a project-wide walk is not fast.
+
+    Returns:
+        {"success", "terminals": [...], "total", "matched", "returned",
+         "truncated", "device", "page"}
+
+        Each terminal carries "handle", "device", "page", "location"
+        (page-space insertion point - the anchor a jumper dot is offset from),
+        "isMainTerminal", and:
+
+          FUNC_TERMINALSORTCODE, FUNC_TERMINALDEVICEPOSITION, level
+              Where the terminal sits in the STRIP. This is what orders a
+              jumper chain - not page position. Sort code is a string and may
+              be empty, in which case EPLAN falls back to designation order.
+          jumperBar / jumperBarName
+              FUNC_TERMINAL_JUMPERBAR #20808. 0 = Automatic (the default),
+              1..3 = Manual start/centre/end, 4 = No automatic jumper,
+              5/6 = Automatic start/end. 5 or 6 would mean EPLAN has recorded
+              the chain endpoints for us.
+          manualJumperCrestExtern / manualJumperCrestIntern
+              FUNC_TERMINAL_JUMPER_EXTERN #20351 / _INTERN #20350, index 1.
+              The jumper crest, e.g. "2/0;1/-1" = a jumper to the terminal two
+              away on the same level, then on to one terminal one level lower.
+              Populated only for MANUAL saddle jumpers, so null is the expected
+              reading on a strip left on Automatic - which is a real answer,
+              not a failure.
+          switchableJumperExtern / switchableJumperIntern (+ ...Name)
+              FUNC_TERMINAL_SWITCHABLE_JUMPER_EXTERN #20292 / _INTERN #20291.
+              0 = None, 1 = Open, 2 = Closed. "Closed" is load-bearing: per the
+              API reference it CREATES a switching jumper connection to the
+              next terminal, so it is a second mechanism that produces jumper
+              connections besides a saddle-jumper crest.
+          saddleJumpersAllowed
+              FUNC_LOGDEF_SADDLEJUMPERCOUNT #20325. A terminal allowing zero
+              must never be given a jumper dot.
+
+        Integer properties are read as NUMBERS, so a legitimate 0 ("Automatic")
+        is never confused with an absent property. Anything absent or throwing
+        is listed in "absentMembers" instead of being quietly dropped.
+    """
+    try:
+        limit = cs_int(limit, "limit", minimum=1, maximum=5000)
+        device_cs = cs_escape(cs_text(device, "device")) if device else None
+        page_cs = cs_escape(cs_text(page, "page")) if page else None
+    except SchematicValueError as exc:
+        return _err(exc)
+
+    device_filter = ""
+    if device_cs:
+        device_filter = '''
+                if (!Matches(SafeText(TryRead(term, "Name", null)), DEVICENAME)) continue;'''
+
+    page_filter = ""
+    if page_cs:
+        page_filter = '''
+                object tpg = TryRead(term, "Page", null);
+                string tpgName = tpg == null ? null : PropText(tpg, "Name");
+                if (tpgName != PAGENAME) continue;'''
+
+    body = '''            Type finderType = FindType("Eplan.EplApi.DataModel.DMObjectsFinder");
+            object finder = Activator.CreateInstance(finderType, new object[] { project });
+            Type filterType = FindType("Eplan.EplApi.DataModel.FunctionsFilter");
+            MethodInfo getTerms = RequireMethod(finderType, "GetTerminals",
+                new string[] { filterType.Name }, false);
+            results["boundSignature"] = getTerms.ToString();
+
+            // GetTerminals(null) returns every terminal, regular and PLC - the
+            // category split only applies when a filter IS supplied. Passing
+            // null avoids configuring a filter scheme, which would be a
+            // project-visible change in a tool that must only read.
+            IEnumerable found = (IEnumerable)Call(getTerms, finder, new object[] { null });
+            if (found == null)
+                throw new Exception("GetTerminals returned null; refusing to report a " +
+                    "project with no terminals, because that is indistinguishable " +
+                    "from the query having failed.");
+
+            List<object> items = new List<object>();
+            int total = 0, matched = 0;
+            foreach (object term in found)
+            {
+                if (term == null) continue;
+                total++;''' + device_filter + page_filter + '''
+                matched++;
+                if (items.Count < LIMIT) items.Add(DumpTerminal(term));
+            }
+            results["total"] = total;
+            results["matched"] = matched;
+            results["returned"] = items.Count;
+            results["truncated"] = matched > items.Count;
+            results["terminals"] = items;
+'''
+    subs = {"LIMIT": str(limit)}
+    if device_cs:
+        subs["DEVICENAME"] = '"%s"' % device_cs
+    if page_cs:
+        subs["PAGENAME"] = '"%s"' % page_cs
+    body = _fill(body, **subs)
+
+    out = _shape(_execute_script(
+        _script(_cls("ReadTerm"), body,
+                extra_helpers=_HELPERS_SCHEMATIC + _HELPERS_CONNECTIONS),
+        timeout=timeout_seconds,
+    ))
+    if out.get("success"):
+        if device:
+            out["device"] = device
+        if page:
+            out["page"] = page
+        if not out.get("total"):
+            out["note"] = (
+                "This project reports NO terminals at all. Either it genuinely "
+                "has none, or the terminals are modelled as plain functions "
+                "rather than Terminal objects - live_read_connections reports "
+                "each end's clrType, which distinguishes the two."
+            )
+        elif (device or page) and not out.get("matched"):
+            out["note"] = (
+                "The project has %d terminal(s) but none matched. The device "
+                "filter is a case-insensitive SUBSTRING of the full tag, which "
+                "includes the location prefix - try \"RD\" rather than the "
+                "full \"+P01-XT\" if a prefix may differ."
+                % out.get("total", 0)
             )
     return out
 

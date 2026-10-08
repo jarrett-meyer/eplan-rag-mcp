@@ -580,21 +580,32 @@ mcp, REGISTRY, _loaded_extensions = build_app(MODE)
 # ============================================================================
 
 if __name__ == "__main__":
+    # The banner MUST go to stderr. Under stdio transport stdout IS the
+    # JSON-RPC channel, and print() buffers into sys.stdout's own
+    # TextIOWrapper while the MCP server writes frames through a second
+    # wrapper on the same fd. The banner then flushes at an arbitrary later
+    # point - observed 24h into a session - splicing its bytes into the
+    # middle of an outgoing frame. The client logs "Ignoring non-JSON line
+    # on stdout", loses that response, and eventually tears the transport
+    # down with "Received a response for an unknown message ID".
+    def _banner(msg):
+        print(msg, file=sys.stderr)
+
     installed = detect_installed_versions()
-    print("EPLAN MCP Server")
+    _banner("EPLAN MCP Server")
     if installed:
         versions = ", ".join(i["full_version"] for i in installed)
-        print(f"Installed EPLAN versions: {versions} (auto-targets the newest)")
+        _banner(f"Installed EPLAN versions: {versions} (auto-targets the newest)")
     else:
-        print("WARNING: no EPLAN installation detected")
-    print("-" * 40)
-    print(f"Mode: {MODE} ({len(REGISTRY.published_names())} of {len(REGISTRY)} "
-          f"tools published)")
+        _banner("WARNING: no EPLAN installation detected")
+    _banner("-" * 40)
+    _banner(f"Mode: {MODE} ({len(REGISTRY.published_names())} of {len(REGISTRY)} "
+            f"tools published)")
     if MODE == "discovery":
-        print("Hidden tools are reachable via eplan_tools_search / "
-              "eplan_tools_describe / eplan_tools_call")
-    print("All actions run as eplan_* (C# script under QuietMode)")
-    print("-" * 40)
+        _banner("Hidden tools are reachable via eplan_tools_search / "
+                "eplan_tools_describe / eplan_tools_call")
+    _banner("All actions run as eplan_* (C# script under QuietMode)")
+    _banner("-" * 40)
 
     # Transport selection: stdio (default) or streamable-http for running the
     # server on the EPLAN machine and connecting from another machine
@@ -614,7 +625,7 @@ if __name__ == "__main__":
             sys.exit(f"MCP_PORT must be an integer in 1..65535, got {raw_port!r}")
         mcp.settings.host = os.environ.get("MCP_HOST", "127.0.0.1")
         mcp.settings.port = port
-        print(f"Transport: streamable-http on {mcp.settings.host}:{mcp.settings.port}")
+        _banner(f"Transport: streamable-http on {mcp.settings.host}:{mcp.settings.port}")
         mcp.run(transport="streamable-http")
     elif transport in _STDIO_TRANSPORTS:
         mcp.run()
