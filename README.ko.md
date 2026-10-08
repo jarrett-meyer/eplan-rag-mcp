@@ -35,8 +35,7 @@ Model Context Protocol(MCP)을 기반으로 **EPLAN Electric P8** 및 **EPLAN EE
 ### 로컬 EPLAN 자동화(P8)
 
 ```bash
-pip install pythonnet mcp
-claude mcp add eplan -- python YOURPATH/eplan-p8-mcp-server/mcp_server/server.py
+python YOURPATH/eplan-p8-mcp-server/install.py   # own .venv + registers "eplan"
 claude mcp list   # "eplan"이 표시되어야 함
 ```
 

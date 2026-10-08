@@ -35,8 +35,7 @@ Cada repositorio tiene su propio README con instrucciones de instalación y uso.
 ### Automatización local de EPLAN (P8)
 
 ```bash
-pip install pythonnet mcp
-claude mcp add eplan -- python YOURPATH/eplan-p8-mcp-server/mcp_server/server.py
+python YOURPATH/eplan-p8-mcp-server/install.py   # own .venv + registers "eplan"
 claude mcp list   # debe mostrar "eplan"
 ```
 

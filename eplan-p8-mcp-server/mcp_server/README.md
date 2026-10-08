@@ -85,39 +85,23 @@ eplan-p8-mcp-server/
 
 - **EPLAN Electric P8** installed (2024, 2025, 2026, or 2027)
 - **Python 3.10+** (64-bit, to match EPLAN's process)
-- Dependencies: `pip install -r requirements.txt` (`pythonnet`, `mcp`,
-  `basyx-python-sdk` for the `aas_*` tools)
+- Dependencies (`pythonnet`, `mcp<2`, `basyx-python-sdk` for the `aas_*` tools)
+  are installed into the server's own `.venv` by `install.py`
 
 ---
 
 ## Installation for Claude Code
 
-### 1. Install dependencies
-
 ```bash
-cd eplan-p8-mcp-server\mcp_server
-pip install -r requirements.txt
-```
-
-### 2. Register the MCP server
-
-```bash
-claude mcp add eplan -- python YOUR_PATH\eplan-p8-mcp-server\mcp_server\server.py
+python YOUR_PATH\eplan-p8-mcp-server\install.py
 claude mcp list   # "eplan" should appear
 ```
 
-Or add it manually to `%USERPROFILE%\.claude\settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "eplan": {
-      "command": "python",
-      "args": ["YOUR_PATH\\eplan-p8-mcp-server\\mcp_server\\server.py"]
-    }
-  }
-}
-```
+`install.py` creates `eplan-p8-mcp-server\.venv`, installs `requirements.txt` into
+it and registers `eplan` (user scope) with that venv's `python.exe`, so the server
+never depends on whichever `python` is first on `PATH`. Re-run it to upgrade.
+Extra arguments are passed to `claude mcp add`, e.g.
+`python install.py -e EPLAN_MCP_MODE=discovery`.
 
 By default the server publishes every tool. If the ~49,000 tokens of tool
 definitions per request matter to you, set `EPLAN_MCP_MODE=discovery` — see
@@ -306,7 +290,7 @@ extension pack is free in discovery mode.
 ```
 
 ```bash
-claude mcp add eplan -e EPLAN_MCP_MODE=discovery -- python YOUR_PATH\eplan-p8-mcp-server\mcp_server\server.py
+python YOUR_PATH\eplan-p8-mcp-server\install.py -e EPLAN_MCP_MODE=discovery
 ```
 
 An unrecognised value warns on stderr and falls back to `full`; it never stops
