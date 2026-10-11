@@ -345,6 +345,12 @@ from .live import (
     live_read_check_messages,
 )
 
+# Generic live object query/edit (any kind, any property, filter + read/write)
+from .objects import (
+    live_objects_read,
+    live_objects_edit,
+)
+
 # Graphic text formatting on the live object model (proportional text rescale)
 from .graphics import (
     live_scale_text,
@@ -509,6 +515,7 @@ __all__ = [
     # Live DataModel
     'live_query_functions', 'live_query_pages', 'live_set_function_text',
     'live_set_connection_designations', 'live_read_check_messages',
+    'live_objects_read', 'live_objects_edit',
     'live_scale_text', 'live_set_layer',
     'live_symbol_catalog', 'live_create_page', 'live_place_symbol',
     'live_connect_pins', 'live_read_page', 'live_remove_placement',

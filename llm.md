@@ -39,7 +39,7 @@ Use one of these whenever you are unsure of an exact action name or parameter â€
 
 ## 2. The local `eplan` action server
 
-It exposes **223 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
+It exposes **225 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
 
 - **8 connection/utility tools**: `eplan_versions`, `eplan_servers`,
   `eplan_connect`, `eplan_status`, `eplan_ping`, `eplan_test`,
@@ -247,7 +247,13 @@ All of these exist as `eplan_*` tools:
   `eplan_live_set_layer` (move the selection or a page onto one layer - default
   `EPLAN100` - and hand colour/line width back to that layer via the same
   `-16002` sentinel; dry-run by default, reports the layers the objects came
-  from).
+  from), and the generic pair `eplan_live_objects_read` / `eplan_live_objects_edit`
+  (find functions, connections or pages project-wide - for the selection use
+  `eplan_get_property`/`eplan_set_property` - filter on any
+  property - id, `id:index`, user-defined name, or name/page/type/handle/partNr -
+  then read any properties, or write them and/or re-apply master part data with
+  `update_from_part`; edit is dry-run by default). Reach for these before
+  writing a new single-purpose live tool.
   These reach `Eplan.EplApi.DataModel`/`HEServices`/`EServices` types via
   `AppDomain.CurrentDomain.GetAssemblies()` + `Assembly.Load` fallback instead
   of a static `using`, because that `using` doesn't compile in EPLAN's script
