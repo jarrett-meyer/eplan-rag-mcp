@@ -483,6 +483,7 @@ def action_run(
     params: dict = None,
     dry_run: bool = False,
     allow_unknown_params: bool = False,
+    direct: bool = False,
 ) -> dict:
     """
     Run ANY EPLAN action by name, validated against the action registry first.
@@ -516,6 +517,12 @@ def action_run(
             lines), so a caller with a better source - the EPLAN docs, or the
             rarely-present live declared_params from action_describe() - can
             set this to proceed.
+        direct: True to skip the quiet-mode C# script wrapper and send the
+            action through the Remote Client as-is. Needed for actions of .NET 8
+            (CoreCLR-hosted) add-ins that lock objects: started inside the
+            script context they fail every lock with S511176 "The object cannot
+            be locked". Off by default because without the wrapper EPLAN may show
+            dialogs; a blocking dialog still ends the call (EplanBlockedByDialog).
 
     Returns:
         dict with the built "command" plus EPLAN's execution result; on
@@ -633,7 +640,7 @@ def action_run(
             error["command"] = command
             return error
 
-        result = manager.execute_action(command)
+        result = manager.execute_action(command, quiet_mode=not direct)
         out = dict(result) if isinstance(result, dict) else {"result": result}
         out.setdefault("success", True)
         out["command"] = command

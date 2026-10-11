@@ -23,9 +23,9 @@ The two are different mechanisms, so a future EPLAN build or an interaction
 name not covered above could still leave the editor parked in a mode.
 
 Recommended when calling these in an unattended loop:
-  1. Arm a UI dismiss watcher (a background watcher that clicks Cancel/OK
-     on any window that appears) as cheap insurance - it costs nothing
-     and turns a surprise modal into evidence instead of a hang.
+  1. If a call returns errorType EplanBlockedByDialog (or EplanBusy), call
+     eplan_list_dialogs to see the prompt and eplan_click_dialog_button to
+     dismiss it - that turns a surprise modal into evidence instead of a hang.
   2. Check eplan_get_system_messages afterwards - a hung EPLAN call is almost
      always a live interaction or a modal left on screen.
 """
@@ -122,8 +122,8 @@ def insert_device(
     INTERACTIVE: this starts a device placement interaction
     in the graphical editor and waits for the user to click an insertion point.
     Verified live: the call returns immediately and raised no modal, so it is
-    safe unattended; arming a UI dismiss watcher first is still recommended as
-    insurance (see module docstring).
+    safe unattended; if one ever returns EplanBlockedByDialog, use
+    eplan_list_dialogs / eplan_click_dialog_button (see module docstring).
 
     Args:
         part_nr: Article part number
@@ -163,8 +163,8 @@ def insert_symbol_reference(
     INTERACTIVE: this arms a symbol placement interaction
     in the graphical editor and waits for the user to click a placement point.
     Verified live: the call returns immediately and raised no modal, so it is
-    safe unattended; arming a UI dismiss watcher first is still recommended as
-    insurance (see module docstring).
+    safe unattended; if one ever returns EplanBlockedByDialog, use
+    eplan_list_dialogs / eplan_click_dialog_button (see module docstring).
 
     Two addressing styles are used in practice. The GUI ribbon overwhelmingly
     uses the function-definition style, e.g.
@@ -220,8 +220,9 @@ def select_device(
 
     INTERACTIVE: this opens EPLAN's device selection
     interaction and waits for the user to pick a device. QuietMode suppresses
-    dialogs but does NOT cancel this interaction. Arm the UI dismiss watch first
-    (see module docstring) before using it unattended.
+    dialogs but does NOT cancel this interaction. Unattended, on
+    EplanBlockedByDialog call eplan_list_dialogs / eplan_click_dialog_button
+    (see module docstring).
 
     Args:
         project_name: Full path of the project (optional). If the project is not

@@ -94,7 +94,7 @@ def unregister_addon(addon_path: str = None, install_file: str = None) -> dict:
     return manager.execute_action(action)
 
 
-def execute_raw_action(action_string: str) -> dict:
+def execute_raw_action(action_string: str, direct: bool = False) -> dict:
     """
     Run an UNVALIDATED EPLAN action string. Prefer action_run(). Confirm with the user.
 
@@ -113,6 +113,12 @@ def execute_raw_action(action_string: str) -> dict:
 
     Args:
         action_string: Complete action string (e.g., "ActionName /PARAM1:value1 /PARAM2:value2")
+        direct: True to skip the quiet-mode C# script wrapper and send the
+            action through the Remote Client as-is. Needed for actions of .NET 8
+            (CoreCLR-hosted) add-ins that lock objects: started inside the
+            script context they fail every lock with S511176 "The object cannot
+            be locked". Off by default because without the wrapper EPLAN may show
+            dialogs; a blocking dialog still ends the call (EplanBlockedByDialog).
 
     Example:
         execute_raw_action('ProjectOpen /Project:"C:\\Projects\\test.elk"')
@@ -121,7 +127,7 @@ def execute_raw_action(action_string: str) -> dict:
     if error:
         return error
 
-    return manager.execute_action(action_string)
+    return manager.execute_action(action_string, quiet_mode=not direct)
 
 
 def load_api_module_net(

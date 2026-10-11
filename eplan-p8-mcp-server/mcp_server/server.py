@@ -15,6 +15,7 @@ Requirements:
 - pip install pythonnet mcp
 """
 
+import asyncio
 import json
 import os
 import sys
@@ -53,6 +54,11 @@ DISCOVERY_CORE_TOOLS = frozenset({
     "eplan_connect",
     "eplan_disconnect",
     "eplan_ping",
+    # A modal blocks every other tool; these read and dismiss it from Windows,
+    # and recall how each prompt was answered before.
+    "eplan_list_dialogs",
+    "eplan_click_dialog_button",
+    "eplan_dialog_history",
     "eplan_action_catalog",
     "eplan_action_describe",
     "eplan_action_run",
@@ -91,12 +97,17 @@ def _is_published(tool_name, mode):
 
 
 def _json_wrapper(f):
-    """Wrap an action function so the MCP tool returns formatted JSON."""
+    """Wrap an action function so the MCP tool returns formatted JSON.
+
+    Async, with the body on a worker thread: FastMCP calls a sync tool on the
+    event loop, so one EPLAN call waiting out its timeout would otherwise stop
+    eplan_list_dialogs / eplan_click_dialog_button from being served at all.
+    """
 
     @functools.wraps(f)
-    def mcp_tool_wrapper(*args, **kwargs):
+    async def mcp_tool_wrapper(*args, **kwargs):
         try:
-            res = f(*args, **kwargs)
+            res = await asyncio.to_thread(f, *args, **kwargs)
             return json.dumps(res, indent=2, ensure_ascii=False)
         except Exception as e:
             return json.dumps({"success": False, "error": str(e)}, indent=2)
@@ -177,6 +188,10 @@ def eplan_connect(host: str = None, port: str = None, version: str = None) -> st
             auto-detection (newest installed version). Use eplan_versions to
             see what is available. Once one version's DLLs are loaded,
             switching requires restarting the MCP server.
+
+    Reconnecting does not unstick an EPLAN still busy with an earlier call
+    (EplanBusy): it only drops this server's marker for that call. Use
+    eplan_app_restart(force=True), after asking the user, for a stuck EPLAN.
     """
     # Allow "10.10.10.2:49152" passed as either host or port.
     if host and ":" in host and port is None:

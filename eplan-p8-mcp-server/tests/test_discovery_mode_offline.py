@@ -104,7 +104,7 @@ def test_discovery_mode_publishes_only_core_and_meta(discovery_app, server):
     app, _ = discovery_app
     expected = set(server.DISCOVERY_CORE_TOOLS) | set(server.DISCOVERY_META_TOOLS)
     assert _names(app) == expected
-    assert len(expected) == 13
+    assert len(expected) == 16
 
 
 def test_discovery_mode_hides_a_known_wrapper(discovery_app):
@@ -387,7 +387,9 @@ def _nodes(app):
 def test_strip_removes_every_title_and_null_default(server, monkeypatch):
     monkeypatch.delenv("EPLAN_MCP_KEEP_SCHEMA_TITLES", raising=False)
     nodes = _nodes(server.build_app("full")[0])
-    assert not [n for n in nodes if "title" in n], "a schema title survived"
+    # A schema title is a string; a dict under "title" is a parameter named
+    # `title` inside a properties map (eplan_click_dialog_button has one).
+    assert not [n for n in nodes if isinstance(n.get("title"), str)],         "a schema title survived"
     assert not [n for n in nodes if "default" in n and n["default"] is None],         "a null default survived"
 
 

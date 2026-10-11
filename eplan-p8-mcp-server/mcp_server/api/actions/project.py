@@ -2,8 +2,47 @@
 Project management actions.
 """
 
+import os
+
 from ._base import _get_connected_manager, _build_action
 from . import _project_cache
+
+_OPEN_MODES = ("Standard", "ReadOnly", "Exclusive")
+
+# Project link files ProjectOpen accepts: normal, write-protected, revision,
+# template, light and exported projects. A packed .elp must be restored first.
+_PROJECT_EXTS = (".elk", ".els", ".elr", ".elt", ".ell", ".elx")
+
+# The C2 typed failures. Exact names: the scripted path also reports EPLAN's
+# own exception types (Eplan.EplApi.Base.BaseException), which are not these.
+_TYPED_FAILURES = frozenset({"EplanBlockedByDialog", "EplanActionTimeout",
+                             "EplanBusy", "EplanNotRunning"})
+
+
+def _same_path(a: str, b: str) -> bool:
+    """True when a and b name the same file. realpath expands 8.3 short names
+    (JARRET~1.MEY) for paths that exist, which normcase/abspath do not."""
+    if not a or not b:
+        return False
+    return os.path.normcase(os.path.realpath(a)) == os.path.normcase(os.path.realpath(b))
+
+
+def _is_typed_failure(result: dict) -> bool:
+    """A typed EPLAN-call failure (EplanBlockedByDialog, EplanBusy, ...) that
+    callers must pass through unchanged."""
+    return result.get("errorType") in _TYPED_FAILURES
+
+
+def _focused_project() -> tuple:
+    """(focused project path or "", raw selectionset result). The path is only
+    meaningful when the result has success; otherwise focus is unknown."""
+    cur = get_current_project()
+    focused = (cur.get("parameters") or {}).get("PROJECT", "") if cur.get("success") else ""
+    return focused, cur
+
+
+def _read_error(cur: dict) -> str:
+    return cur.get("error") or cur.get("message") or "no detail"
 
 
 def open_project(project_path: str, open_mode: str = None) -> dict:
@@ -18,17 +57,86 @@ def open_project(project_path: str, open_mode: str = None) -> dict:
     Args:
         project_path: Full path to the project file (.elk)
         open_mode: Optional - "Standard", "ReadOnly", or "Exclusive"
+
+    If the project already has focus, nothing is sent to EPLAN. After an open
+    the focused project is re-read: "verified" is True only when it is the
+    requested one, and success is False when EPLAN opened something else.
     """
+    if open_mode:
+        mode = next((m for m in _OPEN_MODES if m.lower() == open_mode.lower()), None)
+        if mode is None:
+            return {"success": False,
+                    "error": f"Unknown open_mode {open_mode!r}.",
+                    "next_step": f"Use one of {', '.join(_OPEN_MODES)}, or omit open_mode."}
+        open_mode = mode
+    check_path = "$(" not in project_path  # path variables resolve inside EPLAN only
+    if check_path:
+        if project_path.lower().endswith(".elp"):
+            return {"success": False,
+                    "error": f"{project_path} is a packed project archive, which cannot be opened directly.",
+                    "next_step": "Restore it with eplan_restore_project, then open the restored .elk."}
+        if not project_path.lower().endswith(_PROJECT_EXTS):
+            return {"success": False,
+                    "error": (f"Not an EPLAN project link file (expected "
+                              f"{', '.join(_PROJECT_EXTS)}): {project_path}"),
+                    "next_step": "Pass the full path to the project's .elk file."}
+        if not os.path.isfile(project_path):
+            return {"success": False,
+                    "error": f"Project file not found: {project_path}",
+                    "next_step": "Confirm the exact path with the user; do not guess it."}
+
     manager, error = _get_connected_manager()
     if error:
         return error
 
+    focused, cur = _focused_project()
+    if _is_typed_failure(cur):
+        return cur
+    if _same_path(focused, project_path):
+        if open_mode not in (None, "Standard"):
+            # Reporting success would leave it editable when the caller asked
+            # for ReadOnly/Exclusive precisely to prevent that.
+            return {"success": False,
+                    "error": f"Project is already open in EPLAN, so it cannot be switched to {open_mode} here.",
+                    "next_step": f"Close it first (eplan_close_project), then reopen it as {open_mode}."}
+        return {"success": True, "verified": True, "focused_project": focused,
+                "note": "Project is already open and focused; ProjectOpen was not sent."}
+
     action = _build_action("ProjectOpen", Project=project_path, OpenMode=open_mode)
     _project_cache.bump()
-    return manager.execute_action(action)
+    result = manager.execute_action(action)
+    if not result.get("success"):
+        if _is_typed_failure(result):
+            return result
+        # EPLAN refuses a project that is open but not focused (e.g. reopened
+        # at startup); if it now has focus, the open did what was asked.
+        focused, _ = _focused_project()
+        if _same_path(focused, project_path):
+            return {"success": True, "verified": True, "focused_project": focused,
+                    "note": "ProjectOpen failed, but the project is open and focused."}
+        result.setdefault("next_step",
+                          "The project may already be open without focus: ask the user to "
+                          "click into it in EPLAN, then call eplan_get_current_project.")
+        return result
+
+    focused, cur = _focused_project()
+    result["focused_project"] = focused
+    if check_path:
+        result["verified"] = _same_path(focused, project_path)
+        if not result["verified"]:
+            shown = focused or ("unknown (focus could not be read: " + _read_error(cur) + ")"
+                                if not cur.get("success") else "none")
+            result.update(
+                success=False,
+                error=(f"EPLAN reported success, but the focused project is "
+                       f"{shown}, not {project_path}."),
+                next_step=("Call eplan_get_current_project. If a dialog is up, "
+                           "call eplan_list_dialogs; otherwise ask the user to "
+                           "click into the project in EPLAN."))
+    return result
 
 
-def close_project() -> dict:
+def close_project(expected_project: str = None) -> dict:
     """
     Close the currently open project in EPLAN.
     Action: XPrjActionProjectClose
@@ -56,13 +164,52 @@ def close_project() -> dict:
     when more than one is open. If it matters which project closes, ask the
     user to confirm which one currently has focus in EPLAN before calling
     this.
+
+    Args:
+        expected_project: Optional full path of the project you mean to
+            close. If another project has focus, nothing is closed and an
+            error says which one does.
+
+    The focused project is read before and after the close: "closed_project"
+    names what was closed, and "verified" is True once it no longer has focus.
     """
     manager, error = _get_connected_manager()
     if error:
         return error
 
+    focused, cur = _focused_project()
+    if _is_typed_failure(cur):
+        return cur
+    if not cur.get("success"):
+        # Not "no project": callers (scratch discard) treat NoProjectOpen as
+        # safe to delete, so an unreadable focus must not look like one.
+        return {"success": False, "errorType": "FocusUnknown",
+                "error": f"Could not read which project has focus, so nothing was closed: {_read_error(cur)}",
+                "next_step": ("Call eplan_get_current_project; if it keeps failing, "
+                              "check eplan_get_system_messages.")}
+    if not focused:
+        return {"success": False, "errorType": "NoProjectOpen",
+                "error": "No project is open.",
+                "next_step": "Nothing to close; eplan_get_current_project shows what has focus."}
+    if expected_project and not _same_path(focused, expected_project):
+        return {"success": False, "errorType": "WrongProjectFocused",
+                "error": f"Focused project is {focused}, not {expected_project}; nothing was closed.",
+                "next_step": f"Ask the user to click into {expected_project} in EPLAN, then retry."}
+
     _project_cache.bump()
-    return manager.execute_action("XPrjActionProjectClose")
+    result = manager.execute_action("XPrjActionProjectClose")
+    if not result.get("success"):
+        return result
+
+    after, cur = _focused_project()
+    result["closed_project"] = focused
+    result["verified"] = not _is_typed_failure(cur) and not _same_path(after, focused)
+    if not result["verified"]:
+        result.update(
+            success=False,
+            error=f"EPLAN reported success, but {focused} still has focus (or focus could not be read).",
+            next_step="Call eplan_get_current_project. If a dialog is up, call eplan_list_dialogs.")
+    return result
 
 
 def project_management(
@@ -255,6 +402,7 @@ def upgrade_projects(project_path: str = None, folder_path: str = None) -> dict:
 
     if project_path and folder_path:
         return {"success": False, "error": "Pass only one of project_path or folder_path, not both."}
+    _project_cache.bump()
     if folder_path:
         return manager.execute_action(f'XPrjActionUpgradeProjects /Folder:"{folder_path}"')
     if project_path:
@@ -524,6 +672,7 @@ def run_project_action(
     )
     if action_args:
         command = command + " " + action_args.strip()
+    _project_cache.bump()
     return manager.execute_action(command)
 
 

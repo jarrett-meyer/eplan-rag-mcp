@@ -24,6 +24,7 @@ import subprocess
 import time
 
 from ._base import _get_connected_manager, _quote_param
+from . import _project_cache
 from process_control import connected_process
 from eplan_connection import (
     call_with_timeout,
@@ -88,13 +89,14 @@ def app_launch(version: str = None, variant: str = None, headless: bool = False,
             Useful for CI-style runs; leave False when a human also wants to
             watch the GUI.
         wait_seconds: How long to poll for the remoting server (default
-            600). A cold GUI start that restores the workspace and reopens a
+            600, capped at 900). A cold GUI start that restores the workspace and reopens a
             network project can take 3-4 minutes before the port opens
             (measured live 2026-08-20: ~3.5 min).
         extra_args: Additional raw command-line arguments appended verbatim.
         connect_after: Connect this MCP server to the new instance once the
             remoting port appears (default True).
     """
+    wait_seconds = min(wait_seconds, 900)
     found, error = _find_eplan_exe(version)
     if error:
         return error
@@ -169,6 +171,7 @@ def app_launch(version: str = None, variant: str = None, headless: bool = False,
         return result
 
     if connect_after:
+        _project_cache.bump()
         result["connect"] = manager.connect(port=port)
         result["success"] = result["connect"].get("success", False)
         if result["success"] and (
@@ -197,7 +200,8 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60,
         force: If True and StopEplan() fails or the process lingers past
             wait_seconds, terminate only the identified connected local process as a last resort.
             Default False - never kills.
-        wait_seconds: How long to wait for the process to exit (default 60).
+        wait_seconds: How long to wait for the process to exit (default 60,
+            capped at 900).
         stop_timeout_seconds: How long to give StopEplan() itself before
             giving up on it and moving on to the process wait (default 30).
             StopEplan is an unbounded synchronous CLR call: when a human has
@@ -209,6 +213,7 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60,
     manager, error = _get_connected_manager()
     if error:
         return error
+    wait_seconds = min(wait_seconds, 900)
 
     # Acquire a Windows process handle before StopEplan. Waiting/termination
     # use this handle, so PID reuse can never redirect them to another process.
@@ -246,6 +251,7 @@ def app_shutdown(force: bool = False, wait_seconds: int = 60,
             else:
                 result["stop_eplan_returned"] = bool(value)
         finally:
+            _project_cache.bump()
             try:
                 manager.disconnect()
             except Exception:
@@ -313,7 +319,7 @@ def app_restart(reopen_project: bool = True, headless: bool = False,
         force: Passed to app_shutdown - kill the process if StopEplan
             does not bring it down.
     """
-    from .project import get_current_project, open_project
+    from .project import get_current_project, open_project, close_project, _is_typed_failure
 
     manager, error = _get_connected_manager()
     if error:
@@ -321,11 +327,21 @@ def app_restart(reopen_project: bool = True, headless: bool = False,
 
     steps = {}
 
-    previous_project = None
-    if reopen_project:
-        cur = get_current_project()
-        previous_project = (cur.get("parameters") or {}).get("PROJECT") if cur.get("success") else None
-        steps["previous_project"] = previous_project
+    cur = get_current_project()
+    previous_project = (cur.get("parameters") or {}).get("PROJECT") if cur.get("success") else None
+    steps["previous_project"] = previous_project
+    if not cur.get("success"):
+        steps["previous_project_error"] = cur
+    if previous_project:
+        # Closing first keeps the next start from reporting a crash. A failed
+        # close is recorded but not fatal: the shutdown closes it anyway.
+        steps["close"] = close_project(expected_project=previous_project)
+        if _is_typed_failure(steps["close"]):
+            # A dialog (or stuck call) is up: StopEplan would hang on it, and
+            # force would kill EPLAN with a save prompt still showing.
+            return {"success": False, "steps": steps,
+                    "error": "Closing the project was blocked; EPLAN was not shut down.",
+                    "next_step": steps["close"].get("next_step")}
 
     steps["shutdown"] = app_shutdown(force=force)
     if not steps["shutdown"].get("success"):
@@ -339,21 +355,18 @@ def app_restart(reopen_project: bool = True, headless: bool = False,
                 "error": "Relaunch failed - see steps.launch for details."}
 
     if reopen_project and previous_project:
-        # EPLAN often reopens the last project by itself at startup ("reopen
-        # projects on start" workstation setting) - a second ProjectOpen then
-        # fails with "Project is already open" (observed live 2026-08-20).
-        cur = get_current_project()
-        focused = (cur.get("parameters") or {}).get("PROJECT", "")
-        if focused and os.path.normcase(focused) == os.path.normcase(previous_project):
-            steps["reopen"] = {"success": True,
-                               "message": "Project already reopened by EPLAN on startup."}
-        else:
-            steps["reopen"] = open_project(previous_project)
-            msgs = steps["reopen"].get("eplanMessages") or []
-            if any("already open" in str(m).lower() for m in msgs):
-                steps["reopen"] = {"success": True,
-                                   "message": "Project already open.",
-                                   "eplanMessages": msgs}
+        # open_project skips ProjectOpen when EPLAN already reopened the
+        # project itself at startup, and verifies focus otherwise.
+        steps["reopen"] = open_project(previous_project)
+    elif reopen_project and not cur.get("success"):
+        steps["reopen"] = {"skipped": True,
+                           "note": (f"Could not read the focused project "
+                                    f"({cur.get('errorType') or 'read failed'}); reopen it "
+                                    "with eplan_open_project if one was open.")}
+    elif reopen_project:
+        steps["reopen"] = {"skipped": True,
+                           "note": "No focused project detected; nothing to reopen."}
 
-    ok = all(s.get("success", True) for s in steps.values() if isinstance(s, dict))
+    ok = all(s.get("success", True) for k, s in steps.items()
+             if isinstance(s, dict) and k not in ("close", "previous_project_error"))
     return {"success": ok, "steps": steps}

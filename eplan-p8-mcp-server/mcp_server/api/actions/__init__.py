@@ -313,6 +313,13 @@ from .fixtures import (
     scratch_project_list,
 )
 
+# Dialogs (list/click EPLAN windows from Windows, works while EPLAN is blocked)
+from .dialogs import (
+    list_dialogs,
+    click_dialog_button,
+    dialog_history,
+)
+
 # Discovery (enumerate real EPLAN catalogs instead of guessing)
 from .discovery import (
     settings_list_children,
@@ -492,6 +499,8 @@ __all__ = [
     'app_launch', 'app_shutdown', 'app_restart',
     # Scratch fixtures
     'scratch_project_create', 'scratch_project_discard', 'scratch_project_list',
+    # Dialogs
+    'list_dialogs', 'click_dialog_button', 'dialog_history',
     # Discovery
     'settings_list_children', 'list_schemes', 'list_report_templates',
     'list_layers', 'list_enums',

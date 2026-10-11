@@ -82,10 +82,11 @@ def _reject_unsafe_name(name: str):
 
 
 def _inside_scratch(path: str) -> bool:
+    # realpath, not abspath: %TEMP% is often an 8.3 short path and EPLAN
+    # reports long ones, so both sides must be expanded the same way.
+    root = os.path.realpath(SCRATCH_ROOT)
     try:
-        return os.path.commonpath(
-            [os.path.abspath(path), os.path.abspath(SCRATCH_ROOT)]
-        ) == os.path.abspath(SCRATCH_ROOT)
+        return os.path.commonpath([os.path.realpath(path), root]) == root
     except ValueError:  # different drives
         return False
 
@@ -186,16 +187,18 @@ def scratch_project_discard(project_path: str, close_first: bool = True) -> dict
     Delete a scratch project created by scratch_project_create.
 
     Refuses to touch anything outside the scratch root, so this can never
-    delete a real project. Closes the focused project first if it is the one
-    being discarded (best effort - if a different project has focus in EPLAN,
-    close it manually before discarding).
+    delete a real project. Closes the clone in EPLAN first; if a different
+    project has focus, or the close fails, nothing is deleted. Pass
+    close_first=False only for a clone you know is not open in EPLAN.
 
     Args:
         project_path: Path to the scratch project's .elk file.
         close_first: Close the project in EPLAN before deleting (default True).
     """
     elk, edb, _ = _resolve_project_parts(project_path)
-    if not _inside_scratch(elk):
+    # Both paths that get deleted: for elk == the root itself, edb would be
+    # the root's sibling "<root>.edb", outside the scratch area.
+    if not (_inside_scratch(elk) and _inside_scratch(edb)):
         return {"success": False,
                 "error": f"Refusing to delete outside the scratch root "
                          f"({SCRATCH_ROOT}): {elk}"}
@@ -204,24 +207,42 @@ def scratch_project_discard(project_path: str, close_first: bool = True) -> dict
     if close_first:
         manager, error = _get_connected_manager()
         if not error:
-            from .project import get_current_project, close_project
-            cur = get_current_project()
-            focused = (cur.get("parameters") or {}).get("PROJECT", "")
-            if focused and os.path.normcase(os.path.abspath(focused)) == os.path.normcase(elk):
-                closed = close_project()
+            from .project import close_project
+            closed = close_project(expected_project=elk)
+            if not closed.get("success") and closed.get("errorType") != "NoProjectOpen":
+                if closed.get("errorType") in ("WrongProjectFocused", "FocusUnknown"):
+                    closed["next_step"] += (" If the clone is not open in EPLAN at all, "
+                                            "retry with close_first=False.")
+                return {**closed, "deleted": None}
 
+    # .edb first: if EPLAN still holds it, the .elk link survives and the
+    # clone can be closed and discarded again. Handles can lag a close, so
+    # retry briefly on PermissionError.
     errors = []
-    for path, remover in ((elk, os.remove), (edb, lambda p: shutil.rmtree(p))):
-        if os.path.exists(path):
+    for path, remover in ((edb, shutil.rmtree), (elk, os.remove)):
+        if not os.path.exists(path):
+            continue
+        for attempt in range(5):
             try:
                 remover(path)
+                break
+            except PermissionError as e:
+                if attempt == 4:
+                    errors.append(f"{path}: {e}")
+                else:
+                    time.sleep(0.5)
             except Exception as e:
                 errors.append(f"{path}: {e}")
+                break
+        if errors:
+            break
 
     result = {"success": not errors, "deleted": elk, "closed_in_eplan": closed}
     if errors:
         result["error"] = ("Delete failed (project still open/locked in EPLAN?): "
                            + "; ".join(errors))
+        result["next_step"] = ("Close the clone in EPLAN (eplan_close_project), wait a few "
+                               "seconds, then retry the discard.")
     return result
 
 

@@ -279,8 +279,9 @@ class _FakeManager:
     def __init__(self):
         self.script_path = None
 
-    def execute_action(self, command):
+    def execute_action(self, command, **kw):
         self.script_path = command.split('/ScriptFile:"')[1].rstrip('"')
+        self.kw = kw
         return {"success": True}
 
 
@@ -405,3 +406,13 @@ def test_summary_falls_back_when_every_line_is_cs0105(fake_eplan, monkeypatch):
     result = scripted._execute_script("// never compiles", timeout=0.2)
 
     assert "CS0105" in result["message"]
+
+
+def test_script_label_names_the_calling_tool(fake_eplan, monkeypatch):
+    monkeypatch.setattr(scripted, "get_system_messages",
+                        lambda *a, **k: {"success": True, "messages": []})
+
+    def live_place_symbol():
+        return scripted._execute_script("// no result", timeout=0.1)
+    live_place_symbol()
+    assert fake_eplan.kw["label"] == "live_place_symbol"

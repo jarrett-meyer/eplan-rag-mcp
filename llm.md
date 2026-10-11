@@ -39,15 +39,19 @@ Use one of these whenever you are unsure of an exact action name or parameter �
 
 ## 2. The local `eplan` action server
 
-It exposes **220 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
+It exposes **223 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
 
 - **8 connection/utility tools**: `eplan_versions`, `eplan_servers`,
   `eplan_connect`, `eplan_status`, `eplan_ping`, `eplan_test`,
   `eplan_disconnect`, `eplan_list_extensions`.
-- **203 EPLAN action tools** → `eplan_<action>` (e.g. `eplan_open_project`).
+- **206 EPLAN action tools** → `eplan_<action>` (e.g. `eplan_open_project`).
   Includes 5 discovery tools (`eplan_settings_list_children`,
   `eplan_list_schemes`, `eplan_list_report_templates`, `eplan_list_layers`,
   `eplan_list_enums`) that enumerate real EPLAN catalogs instead of guessing,
+  3 dialog tools (`eplan_list_dialogs`, `eplan_click_dialog_button`,
+  `eplan_dialog_history`) that read, dismiss and remember EPLAN's prompts
+  straight from Windows, so they still work while a modal blocks every other
+  call,
   7 live-DataModel tools (`eplan_live_query_functions`,
   `eplan_live_query_pages`, `eplan_live_set_function_text`,
   `eplan_live_set_connection_designations`,

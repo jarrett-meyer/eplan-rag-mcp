@@ -120,7 +120,7 @@ def test_unparseable_result_is_distinguished_from_no_result(manager, script, tmp
 def test_execute_script_refusal_says_it_is_a_plumbing_fault(manager, script, tmp_path, monkeypatch):
     monkeypatch.setattr(
         manager, "execute_action",
-        lambda a, quiet_mode=False: {"success": False, "message": "boom"})
+        lambda a, quiet_mode=False, **kw: {"success": False, "message": "boom"})
 
     result = manager._run_generated_script(
         "someAction", script, str(tmp_path / "never.json"), 0.0)

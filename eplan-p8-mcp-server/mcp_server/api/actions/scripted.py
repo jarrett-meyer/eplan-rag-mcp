@@ -26,6 +26,7 @@ EPLAN's message tree on timeout and reports the real CS#### error; see
 
 import os
 import re
+import sys
 import json
 import time
 import uuid
@@ -33,6 +34,7 @@ import hashlib
 from typing import List
 from ._base import _get_connected_manager, cs_escape
 from cs_json import prepare_script
+from eplan_connection import carry_hang_note
 
 # A value used as a C# member/identifier (not inside a string literal) cannot
 # be escaped safely - it must be a real identifier. Reject anything else to
@@ -333,17 +335,22 @@ def _compile_errors_for(script_path: str, skip_matches: int = 0,
         _collecting_diagnostics = False
 
 
-def _execute_script(script_content: str, timeout: float = 30.0) -> dict:
+def _execute_script(script_content: str, timeout: float = 30.0, label: str = None) -> dict:
     """
     Execute a C# script in EPLAN and return results.
 
     Args:
         script_content: The C# script code
         timeout: Max seconds to wait for results
+        label: Name for dialog history and EplanBusy messages; defaults to
+            the calling tool's function name, not the temp script path.
 
     Returns:
         dict with success status and results/error
     """
+    # The caller is the tool itself at every call site, so its name says what
+    # raised a dialog without threading a label through ~30 tools.
+    label = label or sys._getframe(1).f_code.co_name
     manager, error = _get_connected_manager()
     if error:
         return error
@@ -382,8 +389,11 @@ def _execute_script(script_content: str, timeout: float = 30.0) -> dict:
         # remote-API round-trips per script: measured on 2027, the median
         # execute_custom_script call goes 0.39s -> 0.22s.
         exec_result = manager.execute_action(
-            f'ExecuteScript /ScriptFile:"{script_path}"'
+            f'ExecuteScript /ScriptFile:"{script_path}"', timeout=timeout, label=label
         )
+        if str(exec_result.get("errorType", "")).startswith("Eplan"):
+            # Dialog / timeout / busy / dead: keep the type and next_step.
+            return exec_result
         if not exec_result.get("success"):
             return {
                 "success": False,
@@ -479,12 +489,12 @@ def _execute_script(script_content: str, timeout: float = 30.0) -> dict:
         # at the outer flag now see failures they previously missed, and callers
         # that read results["..."] are unaffected.
         if isinstance(results, dict) and results.get("success") is False:
-            return {
+            return carry_hang_note(exec_result, {
                 "success": False,
                 "error": results.get("error") or "the script reported failure",
                 "results": results,
-            }
-        return {"success": True, "results": results}
+            })
+        return carry_hang_note(exec_result, {"success": True, "results": results})
 
     except Exception as e:
         return {"success": False, "message": str(e)}

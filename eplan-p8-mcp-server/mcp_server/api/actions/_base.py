@@ -35,7 +35,9 @@ class QuietManagerWrapper:
     def __getattr__(self, name):
         if name == "execute_action":
             # Direct everything to execute_action with quiet_mode=True
-            return lambda action, *args, **kwargs: self.manager.execute_action(action, quiet_mode=True)
+            # quiet_mode=False is the explicit opt-out (direct=True on the tools).
+            return lambda action, quiet_mode=True, **kwargs: self.manager.execute_action(
+                action, quiet_mode=quiet_mode, **kwargs)
         return getattr(self.manager, name)
 
 
