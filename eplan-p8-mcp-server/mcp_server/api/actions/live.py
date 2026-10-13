@@ -514,6 +514,36 @@ _HELPERS = '''
         return Math.Round(Math.Floor(v / grid + 0.5) * grid, 4);
     }
 
+    // An open project by name, full name or .elk path; "" keeps `current` (the focused
+    // one). Lets a tool act on a project that does not have GUI focus - with several
+    // projects open, focus is whatever the user last clicked.
+    static object PickProject(object current, string want)
+    {
+        if (string.IsNullOrEmpty(want)) return current;
+        string w = want.EndsWith(".elk", StringComparison.OrdinalIgnoreCase)
+            ? want.Substring(0, want.Length - 4) : want;
+        Type pmType = FindType("Eplan.EplApi.DataModel.ProjectManager");
+        object pm = Activator.CreateInstance(pmType);
+        IEnumerable open = (IEnumerable)RequireReadable(pmType, "OpenProjects").GetValue(pm, null);
+        List<object> hits = new List<object>();
+        List<string> names = new List<string>();
+        foreach (object p in open)
+        {
+            if (p == null) continue;
+            string full = PropText(p, "ProjectFullName") ?? "";
+            string name = PropText(p, "ProjectName") ?? "";
+            names.Add(full);
+            string bare = full.EndsWith(".elk", StringComparison.OrdinalIgnoreCase)
+                ? full.Substring(0, full.Length - 4) : full;
+            if (string.Equals(bare, w, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(name, w, StringComparison.OrdinalIgnoreCase))
+                hits.Add(p);
+        }
+        if (hits.Count == 1) return hits[0];
+        throw new Exception((hits.Count == 0 ? "No open project matches '" : "Several open projects match '")
+            + want + "'. Open: " + string.Join(" | ", names.ToArray()));
+    }
+
     [Start]
     public void Run()
     {

@@ -344,11 +344,11 @@ Action categories:
 | Export | `export_pdf_project`, `export_pdf_pages`, `export_dxf_*`, `export_dwg_*`, `export_graphics_*`, `export_pxf_project`, `export_3d` |
 | Import | `import_pxf_project`, `import_dwg_page`, `import_dxf_page`, `import_dxfdwg_files`, `import_pdf_comments`, `import_3d` |
 | Print | `print_project`, `print_pages` |
-| Check / verify | `check_project`, `check_pages`, `check_parts` |
+| Check / verify | `check_project`, `check_pages`, `check_parts`, `pdf_inspect`, `dwg_inspect` (read exported PDF / DWG / DXF files) |
 | Generate | `generate_connections`, `generate_cables` |
 | Reports | `update_reports`, `update_model_view_pages`, `create_model_views`, `create_copper_unfolds`, `create_drilling_views` |
 | Search | `search_devices`, `search_text`, `search_all_properties`, `search_page_data`, `search_project_data` |
-| Navigation / edit | `edit_open_page`, `edit_goto_device`, `edit_open_layout_space`, `close_pages`, `get_selected_pages`, `preview_page`, `navigate_to_eec` |
+| Navigation / edit | `edit_open_page`, `edit_goto_device`, `edit_open_layout_space`, `close_pages`, `get_selected_pages`, `preview_page`, `navigate_to_eec`, `navigator_select` |
 | Renumber | `renumber_devices`, `renumber_pages`, `renumber_cables`, `renumber_terminals`, `renumber_connections` |
 | Translate | `translate_project`, `export_missing_translations`, `remove_language` |
 | Device list | `export_device_list`, `import_device_list`, `delete_device_list` |
@@ -363,7 +363,7 @@ Action categories:
 | Data exchange | `export_connections/functions/pages`, `dc_import`, `dc_export`, `export_*_definitions`, `export/import_subproject`, `masterdata_operation`, … |
 | Cabinet / 3D | `calculate_cabinet_weight`, `update_segments_filling`, `topology_operation`, `import_preplanning_data`, `export/import_segments_template` |
 | Production | `export_nc_data`, `export_production_wiring` |
-| Ribbon / add-ons | `export/import_ribbon_bar`, `load_api_module`, `register/unregister_addon`, `execute_raw_action` |
+| Ribbon / add-ons | `export/import_ribbon_bar`, `load_api_module`, `register/unregister_addon`, `execute_raw_action`, `verify_actions` |
 | Scripted (advanced APIs via C#) | `parts_db_query/count/get_part/create/update/list_product_groups`, `settings_get/set_string/bool/int/double`, `pathmap_substitute`, `pathmap_get_common_paths`, `execute_custom_script` |
 | Discovery (enumerate catalogs) | `settings_list_children`, `list_schemes`, `list_report_templates`, `list_layers`, `list_enums` |
 

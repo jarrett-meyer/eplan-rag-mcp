@@ -39,7 +39,7 @@ Use one of these whenever you are unsure of an exact action name or parameter â€
 
 ## 2. The local `eplan` action server
 
-It exposes **230 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
+It exposes **234 tools** (full tool-by-tool reference: [the project wiki](https://github.com/covagashi/eplan-rag-mcp/wiki)):
 
 - **8 connection/utility tools**: `eplan_versions`, `eplan_servers`,
   `eplan_connect`, `eplan_status`, `eplan_ping`, `eplan_test`,
@@ -232,7 +232,15 @@ All of these exist as `eplan_*` tools:
   segment templates.
 - **Production:** NC data, production wiring.
 - **Ribbon & add-ons:** export/import ribbon bar, load API module, register/
-  unregister add-on, and `execute_raw_action` for any action not wrapped.
+  unregister add-on, `execute_raw_action` for any action not wrapped, and
+  `verify_actions` (which action names EPLAN actually registered - the
+  post-deploy check, since EPLAN swallows add-in load failures).
+- **Export verification (host-side, no EPLAN needed):** `pdf_inspect` (page
+  count, GoTo links, outline, page labels) and `dwg_inspect` (layouts, texts,
+  entity counts; DXF natively, DWG via AutoCAD's accoreconsole).
+- **Navigator focus:** `navigator_select` focuses an open project (and
+  selects pages) so selection-driven tools act on it, not on whatever the
+  user last clicked.
 - **Scripted advanced APIs (run as C#):** direct **parts database** queries
   (`parts_db_*`), **typed settings** get/set
   (`settings_get/set_string|bool|int|double`), **PathMap** variable substitution,
@@ -255,9 +263,10 @@ All of these exist as `eplan_*` tools:
   `EPLAN100` - and hand colour/line width back to that layer via the same
   `-16002` sentinel; dry-run by default, reports the layers the objects came
   from), and the generic pair `eplan_live_objects_read` / `eplan_live_objects_edit`
-  (find functions, connections or pages project-wide - for the selection use
+  (find functions, connections, pages or macro boxes project-wide, in the focused
+  project or any open one via `project` - for the selection use
   `eplan_get_property`/`eplan_set_property` - filter on any
-  property - id, `id:index`, user-defined name, or name/page/type/handle/partNr -
+  property - id, `id:index`, user-defined name, or name/page/type/handle/partNr/area -
   then read any properties, or write them and/or re-apply master part data with
   `update_from_part`; edit is dry-run by default). Reach for these before
   writing a new single-purpose live tool.
