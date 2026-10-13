@@ -108,6 +108,7 @@ from .navigation import (
     get_selected_pages,
     preview_page,
     navigate_to_eec,
+    navigator_select,
 )
 
 # Renumber
@@ -268,6 +269,7 @@ from .addons import (
     register_addon,
     unregister_addon,
     execute_raw_action,
+    verify_actions,
     load_api_module_net,
     register_custom_property_editor,
 )
@@ -343,6 +345,12 @@ from .live import (
     live_set_function_text,
     live_set_connection_designations,
     live_read_check_messages,
+)
+
+# Host-side inspection of exported files (PDF, DWG/DXF)
+from .inspect_files import (
+    pdf_inspect,
+    dwg_inspect,
 )
 
 # Generic live object query/edit (any kind, any property, filter + read/write)
@@ -448,7 +456,7 @@ __all__ = [
     'search_devices', 'search_text', 'search_all_properties',
     'search_page_data', 'search_project_data',
     # Navigation
-    'edit_open_page', 'edit_goto_device', 'edit_open_layout_space',
+    'edit_open_page', 'edit_goto_device', 'edit_open_layout_space', 'navigator_select',
     'close_pages', 'redraw_ged', 'get_selected_pages', 'preview_page', 'navigate_to_eec',
     # Renumber
     'renumber_devices', 'renumber_pages', 'renumber_cables', 'renumber_terminals',
@@ -527,6 +535,7 @@ __all__ = [
     'live_query_functions', 'live_query_pages', 'live_set_function_text',
     'live_set_connection_designations', 'live_read_check_messages',
     'live_objects_read', 'live_objects_edit',
+    'pdf_inspect', 'dwg_inspect', 'verify_actions',
     'live_scale_text', 'live_set_layer',
     'live_symbol_catalog', 'live_create_page', 'live_place_symbol',
     'live_connect_pins', 'live_read_page', 'live_remove_placement',

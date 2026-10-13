@@ -1,0 +1,67 @@
+"""Offline checks for pdf/dwg inspection, verify_actions, navigator_select and the live_objects additions."""
+
+from api.actions import addons, inspect_files, live, navigation, objects
+
+_DXF = "\n".join([
+    "0", "SECTION", "2", "ENTITIES",
+    "0", "TEXT", "8", "LAYER_A", "10", "1.5", "20", "2.5", "1", "Hello", "410", "Model",
+    "0", "MTEXT", "8", "LAYER_B", "10", "3", "20", "4", "3", "Part one ", "1", "\\Lpart two", "410", "Sheet1",
+    "0", "LINE", "8", "LAYER_A",
+    "0", "ENDSEC", "0", "EOF", ""])
+
+
+def test_dxf_texts_layouts_and_counts(tmp_path):
+    p = tmp_path / "sheet.dxf"
+    p.write_text(_DXF, encoding="utf-8")
+    r = inspect_files.dwg_inspect(str(p))
+    assert r["success"] and r["format"] == "dxf"
+    assert r["layouts"] == ["Model", "Sheet1"]
+    assert r["entity_counts"] == {"LINE": 1, "MTEXT": 1, "TEXT": 1}
+    assert [t["value"] for t in r["texts"]] == ["Hello", "Part one \\Lpart two"]
+    assert [t["underline_hint"] for t in r["texts"]] == [False, True]
+
+
+def test_dxf_layer_filter_keeps_total(tmp_path):
+    p = tmp_path / "sheet.dxf"
+    p.write_text(_DXF, encoding="utf-8")
+    r = inspect_files.dwg_inspect(str(p), layer_filter="^LAYER_B$")
+    assert r["text_total"] == 2 and [t["layer"] for t in r["texts"]] == ["LAYER_B"]
+
+
+def test_inspectors_reject_missing_and_wrong_files(tmp_path):
+    assert inspect_files.pdf_inspect(str(tmp_path / "nope.pdf"))["success"] is False
+    bad = tmp_path / "x.txt"
+    bad.write_text("x")
+    assert "unsupported extension" in inspect_files.dwg_inspect(str(bad))["error"]
+
+
+def test_pdf_not_measured_is_none_not_zero(tmp_path):
+    # goto_link_count must stay None when links were never counted.
+    r = inspect_files.pdf_inspect(str(tmp_path / "nope.pdf"), include=["outline"])
+    assert r["goto_link_count"] is None
+
+
+def test_verify_actions_validates_names():
+    assert addons.verify_actions([])["success"] is False
+    assert "Invalid action names" in addons.verify_actions(["ok_name", "bad name;"])["error"]
+
+
+def test_macrobox_kind_and_area_pseudo_prop():
+    assert "macrobox" in objects.KINDS
+    r = objects.live_objects_edit("macrobox", set={"area": "0,0,1,1"})
+    assert r["success"] is False and "cannot be set" in r["error"]
+
+
+def test_project_argument_is_escaped_into_script():
+    body = objects._body("page", [], ["name"], {}, False, True, 10, project='a"b')
+    assert 'PickProject(project, "a\\"b")' in body
+
+
+def test_navigator_select_requires_connection_not_crash(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(live, "_execute_script",
+                        lambda script, timeout=None: seen.setdefault("s", script) and {"success": True})
+    navigation.navigator_select("Proj", pages=['=A+B/1', 'x"y'], open_page=False)
+    s = seen["s"]
+    assert 'PickProject(project, "Proj")' in s
+    assert '"x\\"y"' in s and "bool allowOpen = false;" in s

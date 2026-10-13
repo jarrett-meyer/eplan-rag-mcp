@@ -10,7 +10,9 @@ resolved from the loaded assemblies, LockingStep held for the run).
                         part data (DeviceService.UpdateDevice); dry-run default
 
 Objects (`kind`): "function" (devices, cables, terminals...), "connection",
-or "page", found project-wide by filter. For objects the user has SELECTED,
+"page" or "macrobox" (window-macro boxes: 23001 = macro file name, 23011 = type
+of usage), found project-wide by filter. `project` picks any OPEN project by
+name or path; without it the tools act on the one with GUI focus. For objects the user has SELECTED,
 use the existing eplan_get_property / eplan_set_property instead - these tools
 deliberately do not duplicate them.
 
@@ -19,10 +21,12 @@ A property spec is one of:
     "20901:2"                   property id, index 2
     "STD.Fn.Lbl.CP01.T01.L"     user-defined property, by identifying name
     "STD.Fn.Foo:3"              user-defined property, index 3
-    name | page | type | handle | partNr
+    name | page | type | handle | partNr | area
                                 pseudo-properties of the object itself;
                                 partNr is every part number on its article
-                                references (a filter matches if any does)
+                                references (a filter matches if any does);
+                                area is a placement's logical area
+                                "x1,y1,x2,y2" in mm, 2 decimals (macro boxes)
 
 A filter (`where`) is a list of {"prop", "op", "value"}, all of which must
 hold. Ops: eq, ne, contains (case-insensitive), startswith, regex, empty,
@@ -34,7 +38,7 @@ import uuid
 from ._base import cs_escape
 from .live import _FINDER, _execute_script, _script
 
-KINDS = ("function", "connection", "page")
+KINDS = ("function", "connection", "page", "macrobox")
 OPS = ("eq", "ne", "contains", "startswith", "regex", "empty", "notempty")
 
 
@@ -77,8 +81,16 @@ _HELPERS = '''
         object props = RequireReadable(obj.GetType(), "Properties").GetValue(obj, null);
         // PropertyList only has this[AnyPropertyId]; the index lives on the
         // returned PropertyValue (this[int]). There is no (id, index) indexer.
-        MethodInfo item = RequireMethod(props.GetType(), "get_Item",
+        MethodInfo item = MethodByShape(props.GetType(), "get_Item",
             new string[] { "AnyPropertyId" }, false);
+        if (item == null)
+        {
+            // PagePropertyList (and other typed lists) have no this[AnyPropertyId]; they
+            // expose Property(AnyPropertyId, int) instead, which takes the index directly.
+            MethodInfo prop = RequireMethod(props.GetType(), "get_Property",
+                new string[] { "AnyPropertyId", "Int32" }, false);
+            return Call(prop, props, new object[] { r[0], r[1] });
+        }
         object pv = Call(item, props, new object[] { r[0] });
         if ((int)r[1] == 0) return pv;
         MethodInfo byIndex = RequireMethod(pv.GetType(), "get_Item", new string[] { "Int32" }, false);
@@ -97,6 +109,17 @@ _HELPERS = '''
         {
             object pg = TryRead(obj, "Page", null);
             v.Add(pg == null ? null : PropText(pg, "Name"));
+            return v;
+        }
+        if (spec == "area")
+        {
+            // Location throws on a MacroBox; its logical area is what defines the box.
+            object a = Call(RequireMethod(obj.GetType(), "GetLogicalArea", new string[] { }, false), obj, null);
+            object ll = RequireReadable(a.GetType(), "LowerLeft").GetValue(a, null);
+            object ur = RequireReadable(a.GetType(), "UpperRight").GetValue(a, null);
+            Func<object, string, string> c = (p, n) => ((double)RequireReadable(p.GetType(), n).GetValue(p, null))
+                .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            v.Add(c(ll, "X") + "," + c(ll, "Y") + "," + c(ur, "X") + "," + c(ur, "Y"));
             return v;
         }
         if (spec == "partNr")
@@ -172,12 +195,15 @@ def _validate(kind, where, read, limit):
     return None, list(where), [str(r) for r in read], limit
 
 
-def _body(kind, where, read, set_props, update_from_part, dry_run, limit):
+def _body(kind, where, read, set_props, update_from_part, dry_run, limit, project=None):
     w_prop = _cs_array(w["prop"] for w in where)
     w_op = _cs_array(w.get("op", "eq") for w in where)
     w_val = _cs_array("" if w.get("value") is None else w["value"] for w in where)
     s_keys = list(set_props.keys())
-    return _FINDER + '''            string KIND = "''' + kind + '''";
+    pick = '''            project = PickProject(project, "''' + cs_escape(project or "") + '''");
+            results["project"] = PropText(project, "ProjectName");
+'''
+    return pick + _FINDER + '''            string KIND = "''' + kind + '''";
             string[] wProp = ''' + w_prop + ''';
             string[] wOp = ''' + w_op + ''';
             string[] wVal = ''' + w_val + ''';
@@ -189,6 +215,17 @@ def _body(kind, where, read, set_props, update_from_part, dry_run, limit):
             int LIMIT = ''' + str(limit) + ''';
 
             IEnumerable source;
+            if (KIND == "macrobox")
+            {
+                // No GetMacroBoxes: walk every placement and keep the MacroBox ones.
+                Type fType = FindType("Eplan.EplApi.DataModel.PlacementsFilter");
+                MethodInfo get = RequireMethod(finderType, "GetPlacements", new string[] { fType.Name }, false);
+                List<object> boxes = new List<object>();
+                foreach (object o in (IEnumerable)Call(get, finder, new object[] { Activator.CreateInstance(fType) }))
+                    if (o != null && o.GetType().Name == "MacroBox") boxes.Add(o);
+                source = boxes;
+            }
+            else
             {
                 string filterName = KIND == "function" ? "FunctionsFilter"
                     : KIND == "connection" ? "ConnectionsFilter" : "PagesFilter";
@@ -292,24 +329,27 @@ def _run(name, body, timeout_seconds):
 
 
 def live_objects_read(kind: str, where: list = None, read: list = None, limit: int = 100,
-                      timeout_seconds: float = 300.0) -> dict:
+                      timeout_seconds: float = 300.0, project: str = None) -> dict:
     """
     Find objects in the project open in EPLAN and read any of their properties.
     READ-ONLY.
 
     Args:
-        kind: "function" (devices, cables, terminals...), "connection" or
-            "page". For the current selection use eplan_get_property.
+        kind: "function" (devices, cables, terminals...), "connection",
+            "page" or "macrobox". For the current selection use
+            eplan_get_property.
         where: Optional filter, a list of {"prop", "op", "value"} that must all
             hold. ops: eq, ne, contains (case-insensitive), startswith, regex,
             empty, notempty. Example: [{"prop": "partNr", "op": "eq",
             "value": "#6-CU-STRANDED-UNSHIELDED-GN"}].
         read: Property specs to read: "31002" (id), "20901:2" (id:index),
             "STD.Fn.Lbl.CP01.T01.L" (user-defined, by name), or the pseudo
-            props name / page / type / handle / partNr. A property that does
-            not apply to an object reads as "ERROR: ...".
+            props name / page / type / handle / partNr / area. A property that
+            does not apply to an object reads as "ERROR: ...".
         limit: Max objects returned (default 100); "matched" is the true total.
         timeout_seconds: Default 300 - a project-wide walk is not fast.
+        project: An OPEN project by name or path (.elk optional). Default: the
+            project with GUI focus, which is whatever the user last clicked.
 
     Returns:
         {"success", "total", "matched", "returned", "truncated", "objects": [
@@ -318,13 +358,14 @@ def live_objects_read(kind: str, where: list = None, read: list = None, limit: i
     err, where, read, limit = _validate(kind, where, read, limit)
     if err:
         return err
-    return _run("LiveObjectsRead", _body(kind, where, read, {}, False, True, limit), timeout_seconds)
+    return _run("LiveObjectsRead", _body(kind, where, read, {}, False, True, limit, project),
+                timeout_seconds)
 
 
 def live_objects_edit(kind: str, where: list = None, set: dict = None,
                       update_from_part: bool = False, read: list = None,
                       dry_run: bool = True, limit: int = 500,
-                      timeout_seconds: float = 300.0) -> dict:
+                      timeout_seconds: float = 300.0, project: str = None) -> dict:
     """
     Find objects in the open project and write their properties and/or
     re-apply their part data. dry_run=True (default) changes nothing and shows
@@ -341,8 +382,11 @@ def live_objects_edit(kind: str, where: list = None, set: dict = None,
     shows the old value.
 
     Args:
-        kind, where, read: as live_objects_read. An edit without a where clause
-            touches EVERY object of the kind - narrow it first.
+        kind, where, read, project: as live_objects_read. An edit without a
+            where clause touches EVERY object of the kind - narrow it first.
+            Macro boxes: {"23001": "<dir>\\<file>.ema"} repoints a box,
+            {"23011": "2"} makes it Referencing (1 Defining, 3 Subordinate);
+            filter one box by {"prop": "area", "op": "eq", ...}.
         set: {property spec: new text}, e.g. {"31002": "6"}. Pseudo props
             (name, page, ...) are not writable here.
         update_from_part: Re-apply part data (see above), before any `set`.
@@ -359,7 +403,7 @@ def live_objects_edit(kind: str, where: list = None, set: dict = None,
     set_props = set or {}
     if not isinstance(set_props, dict):
         return {"success": False, "error": "set must be a {property spec: value} dict."}
-    pseudo = {"name", "page", "type", "handle", "partNr"}
+    pseudo = {"name", "page", "type", "handle", "partNr", "area"}
     if pseudo & {str(k) for k in set_props}:
         return {"success": False, "error": f"Pseudo properties {sorted(pseudo)} cannot be set."}
     if not set_props and not update_from_part:
@@ -369,5 +413,5 @@ def live_objects_edit(kind: str, where: list = None, set: dict = None,
         return err
     set_props = {str(k): "" if v is None else str(v) for k, v in set_props.items()}
     return _run("LiveObjectsEdit",
-                _body(kind, where, read, set_props, update_from_part, dry_run, limit),
+                _body(kind, where, read, set_props, update_from_part, dry_run, limit, project),
                 timeout_seconds)

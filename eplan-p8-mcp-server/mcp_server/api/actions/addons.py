@@ -130,6 +130,79 @@ def execute_raw_action(action_string: str, direct: bool = False) -> dict:
     return manager.execute_action(action_string, quiet_mode=not direct)
 
 
+def verify_actions(action_names: list) -> dict:
+    """
+    Check which actions are actually registered in the running EPLAN.
+
+    Runs ActionManager.FindAction for each name inside EPLAN. The definitive
+    post-deploy check for an add-in: EPLAN swallows load failures, so an
+    action missing here means its DLL did not load (or an older build is
+    registered). Note that a NEW action in a rebuilt add-in can need the
+    add-in re-registered, not just an EPLAN restart, before it appears.
+
+    Args:
+        action_names: Action names to check (letters, digits, underscore).
+
+    Returns:
+        {"success": True only when all are registered, "checked",
+         "registered": [names], "missing": [names]}
+    """
+    import re
+    from .scripted import _execute_script
+
+    names = [str(n) for n in (action_names or [])]
+    if not names:
+        return {"success": False, "error": "Pass at least one action name."}
+    bad = [n for n in names if not re.match(r"^[A-Za-z0-9_]+$", n)]
+    if bad:
+        return {"success": False, "error": f"Invalid action names: {bad}"}
+
+    checks = "\n".join(
+        f'            found["{n}"] = (new ActionManager().FindAction("{n}") != null);'
+        for n in names
+    )
+    script = f"""using System;
+using System.IO;
+using System.Collections.Generic;
+using Eplan.EplApi.ApplicationFramework;
+using Eplan.EplApi.Scripting;
+
+public class VerifyActions
+{{
+    [Start]
+    public void Run()
+    {{
+        var results = new Dictionary<string, object>();
+        var found = new Dictionary<string, bool>();
+        try
+        {{
+{checks}
+            results["success"] = true;
+            results["found"] = found;
+        }}
+        catch (Exception ex)
+        {{
+            results["success"] = false;
+            results["error"] = ex.Message;
+        }}
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(results);
+        File.WriteAllText(@"{{{{RESULT_PATH}}}}", json);
+    }}
+}}
+"""
+    res = _execute_script(script)
+    if not res.get("success"):
+        return res
+    found = (res.get("results") or {}).get("found", {})
+    missing = sorted(n for n, ok in found.items() if not ok)
+    return {
+        "success": not missing,
+        "checked": len(found),
+        "registered": sorted(n for n, ok in found.items() if ok),
+        "missing": missing,
+    }
+
+
 def load_api_module_net(
     register: str = None,
     register_module: str = None,
