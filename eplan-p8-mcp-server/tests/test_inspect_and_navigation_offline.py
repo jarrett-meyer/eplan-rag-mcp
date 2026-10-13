@@ -1,6 +1,6 @@
 """Offline checks for pdf/dwg inspection, verify_actions, navigator_select and the live_objects additions."""
 
-from api.actions import addons, inspect_files, live, navigation, objects
+from api.actions import addons, inspect_files, navigation, objects
 
 _DXF = "\n".join([
     "0", "SECTION", "2", "ENTITIES",
@@ -59,8 +59,8 @@ def test_project_argument_is_escaped_into_script():
 
 def test_navigator_select_requires_connection_not_crash(monkeypatch):
     seen = {}
-    monkeypatch.setattr(live, "_execute_script",
-                        lambda script, timeout=None: seen.setdefault("s", script) and {"success": True})
+    monkeypatch.setattr(navigation, "_run_as_action",
+                        lambda script, timeout, project: seen.setdefault("s", script) and {"success": True})
     navigation.navigator_select("Proj", pages=['=A+B/1', 'x"y'], open_page=False)
     s = seen["s"]
     assert 'PickProject(project, "Proj")' in s

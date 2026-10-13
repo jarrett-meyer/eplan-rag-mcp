@@ -198,11 +198,16 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
     Returns:
         {"success", "project", "project_selected", "unresolved_pages",
          "opened_page", "focused_project", "selected_pages", "verified"}.
-        verified is True only when EPLAN's own selection read-back shows the
-        project (no pages given) or every requested page.
+        verified is True only when EPLAN's own selection read-back shows every
+        requested page AND eplan_get_current_project (the focus actions use)
+        reports the target project ("action_focus").
+
+    Runs as a one-off registered script action (registered, called, then
+    unregistered): from a plain ExecuteScript script the same calls do not
+    move the focus that actions read.
     """
     from ._base import cs_escape
-    from .live import _execute_script, _script
+    from .live import _script
     import uuid
 
     names = [str(p) for p in (pages or [])]
@@ -215,7 +220,7 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
 
             Type editType = FindType("Eplan.EplApi.HEServices.Edit");
             object edit = Activator.CreateInstance(editType);
-            Type ssType = FindType("Eplan.EplApi.HEServices.SelectionSet");
+            Type selType = FindType("Eplan.EplApi.HEServices.SelectionSet");
             bool projectSelected = false;
             try
             {
@@ -253,7 +258,7 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
 
             Array arr = Array.CreateInstance(FindType("Eplan.EplApi.DataModel.StorableObject"), hits.Count);
             for (int i = 0; i < hits.Count; i++) arr.SetValue(hits[i], i);
-            Action sync = () =>
+            System.Action sync = () =>
             {
                 try
                 {
@@ -265,17 +270,17 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
             Func<List<string>> selected = () =>
             {
                 List<string> s = new List<string>();
-                object ss = Activator.CreateInstance(ssType);
-                IEnumerable sp = Call(RequireMethod(ssType, "GetSelectedPages", new string[] { }, false),
-                    ss, new object[] { }) as IEnumerable;
+                object sel = Activator.CreateInstance(selType);
+                IEnumerable sp = Call(RequireMethod(selType, "GetSelectedPages", new string[] { }, false),
+                    sel, new object[] { }) as IEnumerable;
                 if (sp != null) foreach (object p in sp) s.Add(PropText(p, "Name"));
                 return s;
             };
             Func<string> focused = () =>
             {
-                object ss = Activator.CreateInstance(ssType);
-                object cur = Call(RequireMethod(ssType, "GetCurrentProject", new string[] { "Boolean" }, false),
-                    ss, new object[] { false });
+                object sel = Activator.CreateInstance(selType);
+                object cur = Call(RequireMethod(selType, "GetCurrentProject", new string[] { "Boolean" }, false),
+                    sel, new object[] { false });
                 return cur == null ? null : PropText(cur, "ProjectFullName");
             };
             Func<bool> verify = () =>
@@ -312,7 +317,60 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
             results["verified"] = ok && unresolved.Count == 0;
             results["success"] = true;
 '''
-    return _execute_script(
-        _script("NavigatorSelect_" + uuid.uuid4().hex[:6], body),
-        timeout=timeout_seconds,
-    )
+    return _run_as_action(_script("NavigatorSelect_" + uuid.uuid4().hex[:6], body),
+                          timeout_seconds, project)
+
+
+def _run_as_action(script: str, timeout_seconds: float, project: str) -> dict:
+    """Run a [Start] script as a one-off REGISTERED action, called directly.
+
+    Measured on EPLAN 2027: the same navigator calls made from an
+    ExecuteScript script move SelectionSet inside the script but NOT the focus
+    that actions read (selectionset /TYPE:PROJECT, project close). Run from an
+    action context they do. So the script is registered under a unique
+    [DeclareAction] name, executed through the Remote Client, and unregistered
+    again; then the action-level focus is read back to confirm.
+    """
+    import json
+    import os
+    import uuid
+    from cs_json import prepare_script
+    from . import scripted
+    from .addons import execute_raw_action
+    from .project import get_current_project
+    from .scripts import register_script, unregister_script
+
+    manager, error = _get_connected_manager()
+    if error:
+        return error
+    scripted._ensure_dirs()
+    exec_id = uuid.uuid4().hex[:8]
+    action = "McpNavigatorSelect_" + exec_id
+    path = os.path.join(scripted.SCRIPT_DIR, action + ".cs")
+    result_path = os.path.join(scripted.RESULTS_DIR, "result_" + exec_id + ".json")
+    src = script.replace("{{RESULT_PATH}}", result_path.replace("\\", "\\\\"))
+    src = src.replace("[Start]", '[DeclareAction("' + action + '")]', 1)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(prepare_script(src, getattr(manager, "target_version", None)))
+
+    reg = register_script(path)
+    if not reg.get("success"):
+        return {"success": False, "error": "Could not register the selection action.", "register": reg}
+    try:
+        run = execute_raw_action(action, direct=True)
+    finally:
+        unregister_script(path)
+    if not os.path.exists(result_path):
+        return {"success": False, "error": "The selection action wrote no result "
+                "(it did not run, or failed to compile - see eplan_get_system_messages).",
+                "action_result": run}
+    with open(result_path, encoding="utf-8-sig") as f:
+        results = json.load(f)
+
+    # The check that matters: what EPLAN's actions now see as the current project.
+    focus = (get_current_project().get("parameters") or {}).get("PROJECT") or ""
+    results["action_focus"] = focus
+    target = (results.get("project") or "").lower()
+    results["verified"] = bool(results.get("verified")) and bool(target) and \
+        focus.lower().replace(".elk", "") == target.replace(".elk", "")
+    return {"success": bool(results.get("success")), "results": results}

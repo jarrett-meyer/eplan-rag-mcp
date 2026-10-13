@@ -291,6 +291,10 @@ def _body(kind, where, read, set_props, update_from_part, dry_run, limit, projec
                     {
                         try
                         {
+                            // Placements (macro boxes) refuse a write unless locked first:
+                            // "The object has not been locked before a write access."
+                            MethodInfo lockObj = MethodByShape(obj.GetType(), "LockObject", new string[] { }, false);
+                            if (lockObj != null) Call(lockObj, obj, new object[] { });
                             object pv = PropValue(obj, project, setSpecs[i]);
                             Call(RequireMethod(pv.GetType(), "Set", new string[] { "String" }, false),
                                  pv, new object[] { setVals[i] });

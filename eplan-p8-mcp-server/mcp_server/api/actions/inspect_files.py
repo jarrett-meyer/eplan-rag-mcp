@@ -325,7 +325,11 @@ _LISP_DUMP = r"""(defun mcp-esc (s / i c out)
 (defun c:MCPDUMP ( / f ss n i e out lay)
   (setq f (open "%OUT%" "w"))
   (write-line "{\"layouts\":[" f)
-  (setq lay (layoutlist) i 0)
+  ; LAYOUTLIST is not defined in accoreconsole: read the layout dictionary.
+  (setq lay '() i 0)
+  (foreach x (dictsearch (namedobjdict) "ACAD_LAYOUT")
+    (if (= (car x) 3) (setq lay (cons (cdr x) lay))))
+  (setq lay (reverse lay))
   (foreach l lay
     (write-line (strcat (if (> i 0) "," "") "\"" (mcp-esc l) "\"") f)
     (setq i (1+ i)))
