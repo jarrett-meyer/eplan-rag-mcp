@@ -65,3 +65,17 @@ def test_navigator_select_requires_connection_not_crash(monkeypatch):
     s = seen["s"]
     assert 'PickProject(project, "Proj")' in s
     assert '"x\\"y"' in s and "bool allowOpen = false;" in s
+
+
+def test_discard_removes_read_only_files(tmp_path):
+    import os
+    import stat
+
+    from api.actions import fixtures
+    edb = tmp_path / "x.edb" / "DOC"
+    edb.mkdir(parents=True)
+    f = edb / "external.dwg"
+    f.write_text("x")
+    os.chmod(f, stat.S_IREAD)
+    fixtures._rmtree_writable(str(tmp_path / "x.edb"))
+    assert not (tmp_path / "x.edb").exists()

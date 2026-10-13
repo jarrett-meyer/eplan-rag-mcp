@@ -287,7 +287,7 @@ def test_discard_keeps_files_when_close_fails(eplan, clone, tmp_path):
 def test_discard_closes_then_deletes_edb_first(eplan, clone, monkeypatch):
     eplan.focused = clone
     order = []
-    monkeypatch.setattr(fixtures.shutil, "rmtree", lambda p: order.append(p))
+    monkeypatch.setattr(fixtures.shutil, "rmtree", lambda p, **kw: order.append(p))
     monkeypatch.setattr(fixtures.os, "remove", lambda p: order.append(p))
     result = fixtures.scratch_project_discard(clone)
     assert result["success"] is True and result["closed_in_eplan"]["verified"]

@@ -21,6 +21,27 @@ import time
 
 from ._base import _get_connected_manager
 
+
+def _rmtree_writable(path):
+    """shutil.rmtree that also removes READ-ONLY files.
+
+    Projects carry read-only files (e.g. external documents under DOC\\), and
+    on Windows os.remove refuses those with WinError 5 even though nothing
+    holds them. Clear the flag and retry; a file EPLAN really holds still
+    raises, so the caller's retry/report path stays the same.
+    """
+    import stat
+
+    def clear_and_retry(func, p, _exc):
+        os.chmod(p, stat.S_IWRITE)
+        func(p)
+
+    import sys
+    if sys.version_info >= (3, 12):
+        shutil.rmtree(path, onexc=clear_and_retry)   # onerror is deprecated there
+    else:
+        shutil.rmtree(path, onerror=clear_and_retry)
+
 # Scratch root: everything created here is fair game for deletion.
 SCRATCH_ROOT = os.environ.get(
     "EPLAN_MCP_SCRATCH",
@@ -219,7 +240,7 @@ def scratch_project_discard(project_path: str, close_first: bool = True) -> dict
     # clone can be closed and discarded again. Handles can lag a close, so
     # retry briefly on PermissionError.
     errors = []
-    for path, remover in ((edb, shutil.rmtree), (elk, os.remove)):
+    for path, remover in ((edb, _rmtree_writable), (elk, os.remove)):
         if not os.path.exists(path):
             continue
         for attempt in range(5):

@@ -190,7 +190,8 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
     Args:
         project: Name, full name or .elk path of an open project.
         pages: Page names to select (as shown in the navigator). Omit to only
-            focus the project.
+            focus the project - its first page is then selected, because a bare
+            project selection does not move the focus that actions read.
         open_page: Allow opening the first page when needed (see above).
         timeout_seconds: Max seconds to wait for the script (default 60).
 
@@ -243,6 +244,12 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
                 if (match == null) unresolved.Add(w); else hits.Add(match);
             }
             results["unresolved_pages"] = unresolved;
+            // Project only: still select one page. Selecting the project in the page
+            // navigator moves SelectionSet inside a script, but NOT the focus that
+            // actions (selectionset, project close) read - that follows the navigator
+            // with the newest object selection. Measured on EPLAN 2027.
+            if (want.Length == 0)
+                foreach (object pg in allPages) { hits.Add(pg); break; }
 
             Array arr = Array.CreateInstance(FindType("Eplan.EplApi.DataModel.StorableObject"), hits.Count);
             for (int i = 0; i < hits.Count; i++) arr.SetValue(hits[i], i);
@@ -273,7 +280,7 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
             };
             Func<bool> verify = () =>
             {
-                if (want.Length == 0) return string.Equals(focused(), targetName, StringComparison.OrdinalIgnoreCase);
+                if (!string.Equals(focused(), targetName, StringComparison.OrdinalIgnoreCase)) return false;
                 List<string> s = selected();
                 foreach (object h in hits)
                 {
