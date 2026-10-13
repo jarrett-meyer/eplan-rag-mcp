@@ -60,7 +60,7 @@ def test_project_argument_is_escaped_into_script():
 def test_navigator_select_requires_connection_not_crash(monkeypatch):
     seen = {}
     monkeypatch.setattr(navigation, "_run_as_action",
-                        lambda script, timeout, project: seen.setdefault("s", script) and {"success": True})
+                        lambda script, project: seen.setdefault("s", script) and {"success": True})
     navigation.navigator_select("Proj", pages=['=A+B/1', 'x"y'], open_page=False)
     s = seen["s"]
     assert 'PickProject(project, "Proj")' in s
@@ -79,3 +79,55 @@ def test_discard_removes_read_only_files(tmp_path):
     os.chmod(f, stat.S_IREAD)
     fixtures._rmtree_writable(str(tmp_path / "x.edb"))
     assert not (tmp_path / "x.edb").exists()
+
+
+def test_pdf_unreadable_page_is_not_counted_as_no_links(tmp_path, monkeypatch):
+    import sys
+    import types
+
+    class Page:
+        def __init__(self, ok):
+            self.ok = ok
+
+        def get_links(self):
+            if not self.ok:
+                raise RuntimeError("damaged page")
+            return []
+
+        def get_label(self):
+            return None
+
+        def annots(self):
+            return []
+
+    class Doc:
+        is_encrypted = False
+        page_count = 2
+
+        def __getitem__(self, i):
+            return Page(i == 0)
+
+        def get_toc(self, simple=False):
+            return []
+
+        def close(self):
+            pass
+
+    fake = types.SimpleNamespace(open=lambda p: Doc(), LINK_GOTO=1, LINK_NAMED=4, LINK_URI=2)
+    monkeypatch.setitem(sys.modules, "fitz", fake)
+    p = tmp_path / "x.pdf"
+    p.write_bytes(b"%PDF-1.4")
+    r = inspect_files.pdf_inspect(str(p))
+    assert r["success"] and r["goto_link_count"] is None and r["unmeasured_pages"] == [1]
+
+
+def test_verify_actions_rejects_trailing_newline():
+    assert "Invalid action names" in addons.verify_actions(["Good_Name\n"])["error"]
+
+
+def test_dxf_counts_only_drawn_entities_and_survives_bom(tmp_path):
+    tables = "\n".join(["0", "SECTION", "2", "TABLES", "0", "LAYER", "2", "L1", "0", "ENDSEC", ""])
+    p = tmp_path / "bom.dxf"
+    p.write_text(tables + _DXF, encoding="utf-8-sig")
+    r = inspect_files.dwg_inspect(str(p))
+    assert r["entity_counts"] == {"LINE": 1, "MTEXT": 1, "TEXT": 1}

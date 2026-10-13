@@ -153,7 +153,7 @@ def verify_actions(action_names: list) -> dict:
     names = [str(n) for n in (action_names or [])]
     if not names:
         return {"success": False, "error": "Pass at least one action name."}
-    bad = [n for n in names if not re.match(r"^[A-Za-z0-9_]+$", n)]
+    bad = [n for n in names if not re.fullmatch(r"[A-Za-z0-9_]+", n)]
     if bad:
         return {"success": False, "error": f"Invalid action names: {bad}"}
 

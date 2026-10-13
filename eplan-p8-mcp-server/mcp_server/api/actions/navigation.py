@@ -173,8 +173,7 @@ def navigate_to_eec(object_id: str) -> dict:
     return manager.execute_action(action)
 
 
-def navigator_select(project: str, pages: list = None, open_page: bool = True,
-                     timeout_seconds: float = 60.0) -> dict:
+def navigator_select(project: str, pages: list = None, open_page: bool = True) -> dict:
     """
     Focus an OPEN project in the page navigator and select pages there - the
     click a user would make. Selection-driven tools (eplan_set_page_property,
@@ -193,7 +192,6 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
             focus the project - its first page is then selected, because a bare
             project selection does not move the focus that actions read.
         open_page: Allow opening the first page when needed (see above).
-        timeout_seconds: Max seconds to wait for the script (default 60).
 
     Returns:
         {"success", "project", "project_selected", "unresolved_pages",
@@ -317,11 +315,10 @@ def navigator_select(project: str, pages: list = None, open_page: bool = True,
             results["verified"] = ok && unresolved.Count == 0;
             results["success"] = true;
 '''
-    return _run_as_action(_script("NavigatorSelect_" + uuid.uuid4().hex[:6], body),
-                          timeout_seconds, project)
+    return _run_as_action(_script("NavigatorSelect_" + uuid.uuid4().hex[:6], body), project)
 
 
-def _run_as_action(script: str, timeout_seconds: float, project: str) -> dict:
+def _run_as_action(script: str, project: str) -> dict:
     """Run a [Start] script as a one-off REGISTERED action, called directly.
 
     Measured on EPLAN 2027: the same navigator calls made from an
@@ -353,19 +350,28 @@ def _run_as_action(script: str, timeout_seconds: float, project: str) -> dict:
     with open(path, "w", encoding="utf-8") as f:
         f.write(prepare_script(src, getattr(manager, "target_version", None)))
 
-    reg = register_script(path)
-    if not reg.get("success"):
-        return {"success": False, "error": "Could not register the selection action.", "register": reg}
     try:
-        run = execute_raw_action(action, direct=True)
+        reg = register_script(path)
+        if not reg.get("success"):
+            return {"success": False, "error": "Could not register the selection action.",
+                    "register": reg}
+        try:
+            run = execute_raw_action(action, direct=True)
+        finally:
+            unregister_script(path)
+        if not os.path.exists(result_path):
+            return {"success": False, "error": "The selection action wrote no result "
+                    "(it did not run, or failed to compile - see eplan_get_system_messages).",
+                    "action_result": run}
+        with open(result_path, encoding="utf-8-sig") as f:
+            results = json.load(f)
     finally:
-        unregister_script(path)
-    if not os.path.exists(result_path):
-        return {"success": False, "error": "The selection action wrote no result "
-                "(it did not run, or failed to compile - see eplan_get_system_messages).",
-                "action_result": run}
-    with open(result_path, encoding="utf-8-sig") as f:
-        results = json.load(f)
+        # One-off files: never leave them behind, whatever happened above.
+        for leftover in (path, result_path):
+            try:
+                os.remove(leftover)
+            except OSError:
+                pass
 
     # The check that matters: what EPLAN's actions now see as the current project.
     focus = (get_current_project().get("parameters") or {}).get("PROJECT") or ""

@@ -533,7 +533,9 @@ _HELPERS = '''
             string full = PropText(p, "ProjectFullName") ?? "";
             string name = PropText(p, "ProjectName") ?? "";
             names.Add(full);
-            if (string.Equals(full, w, StringComparison.OrdinalIgnoreCase) ||
+            string bare = full.EndsWith(".elk", StringComparison.OrdinalIgnoreCase)
+                ? full.Substring(0, full.Length - 4) : full;
+            if (string.Equals(bare, w, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(name, w, StringComparison.OrdinalIgnoreCase))
                 hits.Add(p);
         }

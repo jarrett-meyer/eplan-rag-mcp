@@ -74,14 +74,16 @@ def pdf_inspect(path: str, include: list = None, max_pages: int = 500) -> dict:
     A "no links" export is proven by goto_link_count == 0, which is counted over
     every page regardless of max_pages. Do not read that off the pages array
     instead - a page whose rows were capped would look clean. goto_link_count is
-    None when include excluded both "pages" and "annotations", i.e. it was never
-    measured; treating that as 0 would assert something never checked.
+    None when include excluded both "pages" and "annotations", or when any page's
+    links could not be read (those pages are in "unmeasured_pages"), i.e. it was
+    not fully measured; treating that as 0 would assert something never checked.
     """
     want = set(include or ["pages", "annotations", "outline", "labels", "bytes"])
     # None, not 0: "not measured" must never be mistaken for "none found",
     # which is exactly the assertion this field exists to make.
     out = {"success": False, "path": path, "byte_length": None,
            "page_count": None, "encrypted": None, "goto_link_count": None,
+           "unmeasured_pages": [],
            "pages": [], "outline": [], "outline_depth_max": 0,
            "page_labels": [], "truncated": False, "error": None}
 
@@ -129,15 +131,19 @@ def pdf_inspect(path: str, include: list = None, max_pages: int = 500) -> dict:
         # Count GoTo links across EVERY page regardless of max_pages, because
         # "there are no links" is the assertion and a capped scan cannot make it.
         if "annotations" in want or "pages" in want:
-            out["goto_link_count"] = 0
+            count, unmeasured = 0, []
             for i in range(doc.page_count):
                 try:
                     for l in doc[i].get_links():
                         if l.get("kind") in (getattr(fitz, "LINK_GOTO", 1),
                                              getattr(fitz, "LINK_NAMED", 4)):
-                            out["goto_link_count"] += 1
+                            count += 1
                 except Exception:
-                    pass
+                    unmeasured.append(i)
+            # A page that could not be read proves nothing: report the count as
+            # not measured rather than letting it read as "no links there".
+            out["goto_link_count"] = None if unmeasured else count
+            out["unmeasured_pages"] = unmeasured
 
         if "pages" in want:
             limit = min(doc.page_count, max(0, int(max_pages)))
@@ -149,8 +155,9 @@ def pdf_inspect(path: str, include: list = None, max_pages: int = 500) -> dict:
                 if "annotations" in want:
                     try:
                         links = page.get_links()
-                    except Exception:
+                    except Exception as ex:
                         links = []
+                        row["error"] = "links unreadable: %r" % (ex,)
                     row["link_count"] = len(links)
                     for l in links:
                         kind = l.get("kind")
@@ -231,7 +238,8 @@ _DXF_NON_ENTITY = frozenset((
 
 
 def _dxf_pairs(path: str):
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
+    # utf-8-sig: a BOM would otherwise glue onto the first group code and drop it.
+    with open(path, "r", encoding="utf-8-sig", errors="replace") as f:
         while True:
             code = f.readline()
             if not code:
@@ -248,8 +256,14 @@ def _inspect_dxf(path: str, include: set, layer_filter) -> dict:
     layouts, counts, texts = [], {}, []
     cur = None
     mtext_chunks = []
+    # Only ENTITIES and BLOCKS hold drawn objects; TABLES/OBJECTS records
+    # (LAYER, STYLE, DICTIONARY, ...) also start with code 0 and must not count.
+    section, want_section_name = None, False
 
     for code, value in _dxf_pairs(path):
+        if want_section_name and code == "2":
+            section, want_section_name = value.upper(), False
+            continue
         if code == _DXF_ENTITY:
             if cur and cur["kind"] in ("TEXT", "MTEXT"):
                 if mtext_chunks:
@@ -257,7 +271,8 @@ def _inspect_dxf(path: str, include: set, layer_filter) -> dict:
                 _emit_text(cur, texts, layer_filter, out)
             mtext_chunks = []
             kind = value.upper()
-            if kind not in _DXF_NON_ENTITY:
+            want_section_name = kind == "SECTION"
+            if kind not in _DXF_NON_ENTITY and section in ("ENTITIES", "BLOCKS"):
                 counts[kind] = counts.get(kind, 0) + 1
             cur = {"kind": kind, "layout": None, "value": None, "x": None,
                    "y": None, "layer": None, "style": None} \
@@ -319,10 +334,15 @@ _LISP_DUMP = r"""(defun mcp-esc (s / i c out)
   (setq out "" i 1)
   (while (<= i (strlen s))
     (setq c (substr s i 1))
-    (setq out (strcat out (cond ((= c "\"") "\\\"") ((= c "\\") "\\\\") (t c))))
+    ; Control characters (tab, CR, LF in drawing text) would break the JSON: blank them.
+    (setq out (strcat out (cond ((= c "\"") "\\\"") ((= c "\\") "\\\\")
+                                ((< (ascii c) 32) " ") (t c))))
     (setq i (1+ i)))
   out)
-(defun c:MCPDUMP ( / f ss n i e out lay)
+(defun mcp-num (e k / p)
+  (setq p (cdr (assoc 10 e)))
+  (if p (rtos (if (= k 0) (car p) (cadr p)) 2 6) "null"))
+(defun c:MCPDUMP ( / f ss n i e out lay kinds k)
   (setq f (open "%OUT%" "w"))
   (write-line "{\"layouts\":[" f)
   ; LAYOUTLIST is not defined in accoreconsole: read the layout dictionary.
@@ -344,11 +364,23 @@ _LISP_DUMP = r"""(defun mcp-esc (s / i c out)
           ",\"value\":\"" (mcp-esc (cond ((cdr (assoc 1 e))) (""))) "\""
           ",\"layer\":\"" (mcp-esc (cond ((cdr (assoc 8 e))) (""))) "\""
           ",\"style\":\"" (mcp-esc (cond ((cdr (assoc 7 e))) (""))) "\""
-          ",\"x\":" (rtos (car (cdr (assoc 10 e))) 2 6)
-          ",\"y\":" (rtos (cadr (cdr (assoc 10 e))) 2 6)
+          ",\"x\":" (mcp-num e 0)
+          ",\"y\":" (mcp-num e 1)
           "}") f)
       (setq i (1+ i))))
-  (write-line "]}" f)
+  ; Every entity in the drawing, counted by type (not only the texts above).
+  (write-line "],\"counts\":{" f)
+  (setq ss (ssget "_X") kinds '() i 0)
+  (if ss
+    (repeat (setq n (sslength ss))
+      (setq k (cdr (assoc 0 (entget (ssname ss (setq n (1- n)))))))
+      (if (assoc k kinds)
+        (setq kinds (subst (cons k (1+ (cdr (assoc k kinds)))) (assoc k kinds) kinds))
+        (setq kinds (cons (cons k 1) kinds)))))
+  (foreach x kinds
+    (write-line (strcat (if (> i 0) "," "") "\"" (mcp-esc (car x)) "\":" (itoa (cdr x))) f)
+    (setq i (1+ i)))
+  (write-line "}}" f)
   (close f)
   (princ))
 (c:MCPDUMP)
@@ -408,11 +440,10 @@ def _inspect_dwg(path: str, include: set, layer_filter, timeout_s: int) -> dict:
     out["layouts"] = dumped.get("layouts") or []
     rows = dumped.get("texts") or []
     out["text_total"] = len(rows)
-    counts = {}
+    counts = dumped.get("counts") or {}
     kept = []
     for r in rows:
         kind = (r.get("kind") or "").upper()
-        counts[kind] = counts.get(kind, 0) + 1
         if layer_filter and r.get("layer") and not re.search(
                 layer_filter, r["layer"]):
             continue
@@ -455,6 +486,12 @@ def dwg_inspect(path: str, include: list = None, layer_filter: str = None,
          "layouts": [name], "text_total",
          "texts": [{layout, kind, value, x, y, layer, style, underline_hint}],
          "entity_counts": {type: n}, "truncated", "error"}
+
+    Limits: entity_counts covers every entity type in both formats. Text
+    rows carry "layout" for DXF only (it is None for DWG). DXF layouts are
+    the ones that hold entities; an empty paper-space layout is not listed.
+    The file is opened by AutoCAD (DWG) or parsed here (DXF), so only pass
+    drawings you trust, such as EPLAN's own exports.
 
     underline_hint flags a text carrying DXF/MTEXT underline markup (\L, %%u).
     EPLAN's own DXF/DWG export drops underline formatting, so this is how a

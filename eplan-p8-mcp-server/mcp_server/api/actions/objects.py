@@ -11,7 +11,8 @@ resolved from the loaded assemblies, LockingStep held for the run).
 
 Objects (`kind`): "function" (devices, cables, terminals...), "connection",
 "page" or "macrobox" (window-macro boxes: 23001 = macro file name, 23011 = type
-of usage), found project-wide by filter. `project` picks any OPEN project by
+of usage; found by walking every placement, so allow time on big projects),
+found project-wide by filter. `project` picks any OPEN project by
 name or path; without it the tools act on the one with GUI focus. For objects the user has SELECTED,
 use the existing eplan_get_property / eplan_set_property instead - these tools
 deliberately do not duplicate them.
