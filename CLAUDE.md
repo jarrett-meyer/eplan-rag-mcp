@@ -1,3 +1,15 @@
+## Public repo: generic tools only, no company information
+
+This repo is public and holds generic EPLAN tooling that works for any EPLAN user: `eplan_*` MCP
+tools, EPLAN API helpers, scripts, and measurements of EPLAN behavior. Company-specific add-ins,
+config, tools, and project knowledge belong in the private repo that uses this one, not here.
+
+**Never add company information**, in code, comments, tests, docs, fixtures, or commit messages.
+That means no company, client, or utility names, no project, drawing, or site names, no network
+paths or drive letters of a company share, and no user names or emails. Measurements often come
+from clones of real client projects, so redact each identifier to its shape (`<project>`,
+`<drawing>-<n>`), never to a different real value. When in doubt, leave it out.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
